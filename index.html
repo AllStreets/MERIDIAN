@@ -199,7 +199,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 #ticker{position:fixed;top:var(--hdr-h);left:0;right:0;height:var(--tkr-h);z-index:99;background:rgba(3,4,9,.95);border-bottom:1px solid var(--b1);display:flex;align-items:center;overflow:hidden}
 .tkr-lbl{flex-shrink:0;padding:0 14px;height:100%;background:var(--brk);display:flex;align-items:center;font-family:var(--f-brand);font-size:8.5px;font-weight:700;letter-spacing:.15em;color:#fff}
 .tkr-track{flex:1;overflow:hidden}
-.tkr-inner{display:flex;white-space:nowrap;will-change:transform}
+.tkr-inner{display:inline-flex;white-space:nowrap;will-change:transform}
 .tkr-inner:hover{animation-play-state:paused}
 @keyframes tkr-scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 .tkr-item{display:inline-flex;align-items:center;gap:8px;padding:0 30px;font-size:11.5px;color:var(--t2);cursor:pointer;transition:color .15s}
@@ -1270,7 +1270,8 @@ function toggleSidebar() {
 // ═══════════════════════════════════════════
 let _tkrHash = '';
 function initTicker() {
-  const ordered = [...NEWS.filter(s => s.brk), ...NEWS.filter(s => !s.brk)];
+  // Top 25 only: breaking first, then most recent — keeps loop length sane
+  const ordered = [...NEWS.filter(s => s.brk), ...NEWS.filter(s => !s.brk)].slice(0, 25);
   // Skip re-render if content hasn't changed — prevents animation restart flicker
   const hash = ordered.map(s => s.id).join(',');
   if (hash === _tkrHash) return;
@@ -1286,7 +1287,7 @@ function initTicker() {
       ${s.title}
     </span>`).join('');
   const halfW = el.scrollWidth / 2;
-  const dur = Math.round(halfW / 120); // 120px/s
+  const dur = Math.round(halfW / 50); // 50px/s — matches market bar
   void el.offsetWidth;
   el.style.animation = `tkr-scroll ${dur}s linear infinite`;
 }
