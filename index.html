@@ -270,7 +270,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 .nc-star{width:20px;height:20px;background:none;border:none;cursor:pointer;color:var(--t3);display:flex;align-items:center;justify-content:center;padding:0;transition:color .18s;flex-shrink:0}
 .nc-star.saved{color:#FFD60A}
 .nc-star:hover{color:var(--t2)}
-.sb-wl-btn{padding:3px 8px;border:1px solid var(--b1);background:none;border-radius:2px;font-family:var(--f-mono);font-size:8px;letter-spacing:.1em;color:var(--t3);cursor:pointer;transition:all .18s}
+.sb-wl-btn{width:28px;height:28px;border:1px solid var(--b1);background:none;border-radius:2px;font-size:16px;line-height:1;color:var(--t3);cursor:pointer;transition:all .18s;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .sb-wl-btn.on{border-color:rgba(255,214,10,.35);color:#FFD60A;background:rgba(255,214,10,.06)}
 
 /* ── MARKET BAR (horizontal, below header, left of sidebar) ── */
@@ -1272,18 +1272,19 @@ function initTicker() {
   const ordered = [...NEWS.filter(s => s.brk), ...NEWS.filter(s => !s.brk)];
   const items = [...ordered, ...ordered]; // duplicate for seamless loop
   const el = document.getElementById('tkr-inner');
+  // Stop animation before updating content to avoid flicker
+  el.style.animation = 'none';
   el.innerHTML = items.map(s => `
     <span class="tkr-item" data-url="${s.url || ''}" onclick="if(this.dataset.url)window.open(this.dataset.url,'_blank')" title="${s.url ? 'Click to read full article' : ''}">
       <span class="tkr-pip" style="background:${s.color}"></span>
       <span class="tkr-src" style="color:${s.color}">${s.src.toUpperCase()}</span>
       ${s.title}
     </span>`).join('');
-  // Duration proportional to content: ~110px/s gives natural speed
-  requestAnimationFrame(() => {
-    const halfW = el.scrollWidth / 2;
-    const dur = Math.round(halfW / 180);
-    el.style.animation = `tkr-scroll ${dur}s linear infinite`;
-  });
+  // Read width, force reflow to clear 'none', then start — no intermediate frames
+  const halfW = el.scrollWidth / 2;
+  const dur = Math.round(halfW / 140);
+  void el.offsetWidth; // flush 'none' state
+  el.style.animation = `tkr-scroll ${dur}s linear infinite`;
 }
 
 // ═══════════════════════════════════════════
@@ -1594,30 +1595,31 @@ async function fetchMarketData() {
 
   const items = [];
 
-  // ── 1. Equities via Yahoo Finance (unofficial, CORS-enabled) ───────
+  // ── 1. Equities via Yahoo Finance v8/chart (per-ticker, parallel) ──
+  // v8/chart on query2 avoids preflight CORS issues vs v7/quote on query1
   try {
-    const r = await fetch(
-      `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${STOCK_TICKERS.join(',')}&fields=regularMarketPrice,regularMarketChangePercent,shortName`,
-      { headers: { 'Accept': 'application/json' } }
-    );
-    if (r.ok) {
+    const fetchTicker = async (sym) => {
+      const r = await fetch(`https://query2.finance.yahoo.com/v8/finance/chart/${sym}?interval=1d&range=1d`);
+      if (!r.ok) return null;
       const d = await r.json();
-      const quotes = d?.quoteResponse?.result || [];
-      const scored = quotes
-        .filter(q => q.regularMarketChangePercent != null)
-        .map(q => ({
-          sym: q.symbol,
-          price: formatPrice(q.regularMarketPrice),
-          chg: q.regularMarketChangePercent,
-          _score: (STOCK_WEIGHTS[q.symbol] || 5) * Math.abs(q.regularMarketChangePercent),
-          label: (q.shortName || q.symbol)
-            .replace(/,?\s*Inc\.?$/i,'').replace(/\s+Corp\.?$/i,'').replace(/\s+Ltd\.?$/i,'').slice(0,14),
-        }))
-        .sort((a, b) => b._score - a._score);
-      scored.slice(0, 3).forEach(s =>
-        items.push({ sym: s.sym, price: s.price, chg: s.chg, label: s.label, _score: s._score, type: 'stock' })
-      );
-    }
+      const meta = d?.chart?.result?.[0]?.meta;
+      if (!meta?.regularMarketPrice) return null;
+      const prev = meta.chartPreviousClose || meta.previousClose || meta.regularMarketPrice;
+      const chgPct = ((meta.regularMarketPrice - prev) / prev) * 100;
+      return {
+        sym,
+        price: formatPrice(meta.regularMarketPrice),
+        chg: chgPct,
+        _score: (STOCK_WEIGHTS[sym] || 5) * Math.abs(chgPct),
+        type: 'stock',
+      };
+    };
+    const results = await Promise.allSettled(STOCK_TICKERS.map(fetchTicker));
+    const scored = results
+      .filter(r => r.status === 'fulfilled' && r.value)
+      .map(r => r.value)
+      .sort((a, b) => b._score - a._score);
+    scored.slice(0, 3).forEach(s => items.push(s));
   } catch(e) {}
 
   // ── 2. Crypto via CoinGecko ────────────────────────────────────────
@@ -1687,16 +1689,13 @@ function renderMarketBar() {
   addGroup(marketData.filter(m => m.type === 'crypto'));
   addGroup(marketData.filter(m => m.type === 'fx'));
 
-  // Duplicate for seamless loop
+  el.style.animation = 'none';
   const half = items.join('');
   el.innerHTML = half + '<div class="mkt-sep" style="opacity:0;padding:0 24px"></div>' + half;
-
-  // Set scroll speed: ~90px/s
-  requestAnimationFrame(() => {
-    const halfW = el.scrollWidth / 2;
-    const dur = Math.round(halfW / 90);
-    el.style.animation = `mkt-scroll ${dur}s linear infinite`;
-  });
+  const halfW = el.scrollWidth / 2;
+  const dur = Math.round(halfW / 50);
+  void el.offsetWidth;
+  el.style.animation = `mkt-scroll ${dur}s linear infinite`;
 }
 
 function toggleMarket() {
