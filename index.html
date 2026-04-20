@@ -188,8 +188,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 .gm-tip{position:absolute;left:14px;top:50%;transform:translateY(-50%);background:rgba(3,4,9,.94);border:1px solid rgba(255,255,255,.1);border-radius:3px;padding:5px 10px;font-family:var(--f-ui);font-size:10.5px;color:var(--t1);white-space:nowrap;max-width:190px;overflow:hidden;text-overflow:ellipsis;pointer-events:none;opacity:0;transition:opacity .13s;backdrop-filter:blur(10px)}
 .gm:hover .gm-tip{opacity:1}
 
-/* ── COORDS ─────────────────────────── */
-#coords{position:fixed;bottom:calc(var(--scrb-h) + 16px);left:58px;z-index:100;font-family:var(--f-mono);font-size:9.5px;color:var(--t3);letter-spacing:.08em;pointer-events:none}
 
 /* ── RESET BUTTON ───────────────────── */
 #reset-btn{position:fixed;bottom:calc(var(--scrb-h) + 16px);left:20px;z-index:101;width:32px;height:32px;background:rgba(15,20,50,.85);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.18);border-radius:3px;cursor:pointer;color:rgba(200,210,255,.7);display:flex;align-items:center;justify-content:center;transition:border-color .18s,color .18s,background .18s,box-shadow .18s;box-shadow:0 0 0 1px rgba(10,132,255,.15)}
@@ -445,8 +443,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
   </div>
 </div>
 
-<!-- COORDS + RESET -->
-<div id="coords">— · —</div>
+<!-- RESET -->
 <button id="reset-btn" onclick="resetGlobe()" title="Reset globe view">
   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
 </button>
@@ -1031,7 +1028,7 @@ function initGlobe() {
     if (lat != null) {
       const la = lat >= 0 ? lat.toFixed(3)+'°N' : Math.abs(lat).toFixed(3)+'°S';
       const ln = lng >= 0 ? lng.toFixed(3)+'°E' : Math.abs(lng).toFixed(3)+'°W';
-      document.getElementById('coords').textContent = `${la}  ·  ${ln}`;
+      // coords display removed
     }
   });
 
