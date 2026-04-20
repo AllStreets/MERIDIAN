@@ -274,7 +274,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 .sb-wl-btn.on{border-color:rgba(255,214,10,.35);color:#FFD60A;background:rgba(255,214,10,.06)}
 
 /* ── MARKET BAR (horizontal, below header, left of sidebar) ── */
-#market-bar{position:fixed;top:var(--hdr-h);left:0;right:var(--sb-w);height:var(--tkr-h);z-index:200;background:rgba(4,5,14,.97);border-bottom:1px solid var(--b1);display:flex;align-items:center;overflow:hidden;opacity:0;pointer-events:none;transition:opacity .22s}
+#market-bar{position:fixed;top:var(--hdr-h);left:0;right:0;height:var(--tkr-h);z-index:200;background:rgba(4,5,14,.97);border-bottom:1px solid var(--b1);display:flex;align-items:center;overflow:hidden;opacity:0;pointer-events:none;transition:opacity .22s}
 #market-bar.on{opacity:1;pointer-events:all}
 .mkt-lbl{flex-shrink:0;padding:0 12px;height:100%;background:rgba(255,214,10,.1);border-right:1px solid rgba(255,214,10,.2);display:flex;align-items:center;font-family:var(--f-mono);font-size:7.5px;font-weight:600;letter-spacing:.2em;color:var(--fin);white-space:nowrap}
 .mkt-track{flex:1;overflow:hidden;position:relative}
