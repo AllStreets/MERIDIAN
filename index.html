@@ -164,7 +164,9 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 .pk-count{font-family:var(--f-mono);font-size:9px;color:var(--t3)}
 .pk-close{width:26px;height:26px;border:1px solid var(--b1);background:none;color:var(--t2);cursor:pointer;border-radius:2px;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all .15s;font-family:monospace}
 .pk-close:hover{border-color:var(--b2);color:var(--t1)}
-.pk-list{padding:8px}
+.pk-list{padding:8px;max-height:55vh;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--b1) transparent}
+.pk-list::-webkit-scrollbar{width:3px}
+.pk-list::-webkit-scrollbar-thumb{background:var(--b1)}
 .pk-item{display:flex;align-items:flex-start;gap:12px;padding:13px 12px;border-radius:3px;cursor:pointer;transition:background .15s;border-bottom:1px solid var(--b1)}
 .pk-item:last-child{border-bottom:none}
 .pk-item:hover{background:rgba(255,255,255,.04)}
@@ -264,7 +266,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 #scrb-time-lbl{font-family:var(--f-mono);font-size:10px;min-width:140px;color:var(--t2);flex-shrink:0;text-align:center}
 
 /* ── WATCHLIST STAR ──────────────────── */
-.nc-star{width:18px;height:18px;background:none;border:none;cursor:pointer;color:var(--t3);display:flex;align-items:center;justify-content:center;padding:0;margin-left:auto;transition:color .18s;flex-shrink:0}
+.nc-actions{display:flex;align-items:center;gap:6px;margin-left:auto;flex-shrink:0}
+.nc-star{width:20px;height:20px;background:none;border:none;cursor:pointer;color:var(--t3);display:flex;align-items:center;justify-content:center;padding:0;transition:color .18s;flex-shrink:0}
 .nc-star.saved{color:#FFD60A}
 .nc-star:hover{color:var(--t2)}
 .sb-wl-btn{padding:3px 8px;border:1px solid var(--b1);background:none;border-radius:2px;font-family:var(--f-mono);font-size:8px;letter-spacing:.1em;color:var(--t3);cursor:pointer;transition:all .18s}
@@ -1059,24 +1062,28 @@ function renderFeed(stories) {
       feed.innerHTML = stories.map(s => `
         <div class="ncard" style="--nc:${s.color}" data-id="${s.id}">
           <div class="nc-top">
-            <span class="nc-cat">${CATS[s.cat].label}</span>
+            <span class="nc-cat">${CATS[s.cat] ? CATS[s.cat].label : s.cat.toUpperCase()}</span>
             <div class="nc-dot"></div>
             <span class="nc-src">${s.src}</span>
             ${s.brk ? '<span class="brk">BREAKING</span>' : ''}
             <span class="nc-time">${s.time}</span>
-            <button class="nc-star ${watchlist.includes(s.id)?'saved':''}" onclick="event.stopPropagation();toggleWatchlist(${s.id})" title="Save to watchlist">
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="${watchlist.includes(s.id)?'currentColor':'none'}" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-            </button>
-            <button class="nc-star" onclick="event.stopPropagation();pinStory(${s.id})" title="Pin to Analyst Mode" style="color:${analystAssets.includes(s.id)?'#00D4FF':'var(--t3)'}">
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-            </button>
+            <div class="nc-actions" onclick="event.stopPropagation()">
+              <button class="nc-star ${watchlist.includes(s.id)?'saved':''}" onclick="toggleWatchlist(${s.id})" title="Save to watchlist">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="${watchlist.includes(s.id)?'currentColor':'none'}" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              </button>
+              <button class="nc-star" onclick="pinStory(${s.id})" title="Pin to Analyst Mode" style="color:${analystAssets.includes(s.id)?'#00D4FF':'var(--t3)'}">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+              </button>
+            </div>
           </div>
-          <div class="nc-title">${s.title}</div>
-          <div class="nc-sum">${s.summary}</div>
-          <div class="nc-loc"><div class="nc-pip"></div>${s.region}</div>
+          <div class="nc-title">${s.title || ''}</div>
+          <div class="nc-sum">${s.summary || ''}</div>
+          ${s.region ? `<div class="nc-loc"><div class="nc-pip"></div>${s.region}</div>` : ''}
         </div>`).join('');
       feed.querySelectorAll('.ncard').forEach(card => {
-        const story = NEWS.find(s => s.id === +card.dataset.id);
+        const sid = +card.dataset.id;
+        // search both active NEWS and fallback so seeded stories always work
+        const story = NEWS.find(s => s.id === sid) || FALLBACK_NEWS.find(s => s.id === sid);
         if (story) card.addEventListener('click', () => openArticle(story));
       });
     }
@@ -1182,11 +1189,14 @@ function closePicker() {
 // ARTICLE PANEL
 // ═══════════════════════════════════════════
 function openArticle(story) {
-  if (!story || !G) return;
-  G.controls().autoRotate = false;
-  G.pointOfView({lat: story.lat, lng: story.lng, altitude: 1.55}, 1400);
+  if (!story) return;
+  if (G && story.lat != null && story.lng != null && !isNaN(story.lat) && !isNaN(story.lng)) {
+    G.controls().autoRotate = false;
+    G.pointOfView({lat: story.lat, lng: story.lng, altitude: 1.55}, 1400);
+  }
 
-  const cfg = CATS[story.cat];
+  const cfg = CATS[story.cat] || {label: (story.cat||'').toUpperCase(), color: story.color || '#888'};
+  story.color = story.color || cfg.color || '#888';
   document.getElementById('ap-cat').textContent = cfg.label;
   document.getElementById('ap-cat').style.cssText = `color:${story.color};background:${story.color}18`;
   const brkEl = document.getElementById('ap-brk');
@@ -1205,9 +1215,13 @@ function openArticle(story) {
     apLink.style.display = 'none';
   }
   document.getElementById('ap-cdot').style.background = story.color;
-  const la = story.lat >= 0 ? story.lat.toFixed(4)+'°N' : Math.abs(story.lat).toFixed(4)+'°S';
-  const ln = story.lng >= 0 ? story.lng.toFixed(4)+'°E' : Math.abs(story.lng).toFixed(4)+'°W';
-  document.getElementById('ap-coords').textContent = `${la}, ${ln}  ·  ${story.region.toUpperCase()}`;
+  let coordStr = story.region ? story.region.toUpperCase() : '';
+  if (story.lat != null && !isNaN(story.lat)) {
+    const la = story.lat >= 0 ? story.lat.toFixed(4)+'°N' : Math.abs(story.lat).toFixed(4)+'°S';
+    const ln = story.lng >= 0 ? story.lng.toFixed(4)+'°E' : Math.abs(story.lng).toFixed(4)+'°W';
+    coordStr = `${la}, ${ln}  ·  ${coordStr}`;
+  }
+  document.getElementById('ap-coords').textContent = coordStr;
 
   document.getElementById('art-panel').classList.add('on');
   document.getElementById('art-bd').classList.add('on');
@@ -1380,9 +1394,42 @@ function updateAllGlobeElements() {
 }
 
 function showEqInfo(eq) {
-  if (!G) return;
-  G.controls().autoRotate = false;
-  G.pointOfView({ lat: eq.lat, lng: eq.lng, altitude: 1.8 }, 1200);
+  // Group nearby quakes within 3° and show picker if multiple
+  const nearby = EQ_DATA.filter(e =>
+    Math.abs(e.lat - eq.lat) < 3 && Math.abs(e.lng - eq.lng) < 3
+  ).sort((a, b) => b.mag - a.mag);
+
+  if (nearby.length > 1) {
+    // Reuse picker panel with earthquake data
+    if (G) { G.controls().autoRotate = false; G.pointOfView({ lat: eq.lat, lng: eq.lng, altitude: 2.0 }, 1000); }
+    document.getElementById('pk-loc').textContent = `SEISMIC CLUSTER`;
+    document.getElementById('pk-count').textContent = `${nearby.length} EVENTS IN AREA`;
+    document.getElementById('pk-list').innerHTML = nearby.map(e => `
+      <div class="pk-item" data-eq-id="${e.id}">
+        <div class="pk-accent" style="background:${e.color}"></div>
+        <div class="pk-info">
+          <div class="pk-cat" style="color:${e.color}">M${e.mag.toFixed(1)} EARTHQUAKE${e.mag >= 6.0 ? ' · <span style="color:var(--brk)">SIGNIFICANT</span>' : ''}</div>
+          <div class="pk-title">${e.place}</div>
+          <div class="pk-src">USGS · Depth ${e.depth}km · ${e.time}</div>
+        </div>
+        <span class="pk-arrow">›</span>
+      </div>`).join('');
+    document.getElementById('pk-list').querySelectorAll('.pk-item').forEach(el => {
+      const e = EQ_DATA.find(eq => eq.id === el.dataset.eqId);
+      if (e) el.addEventListener('click', () => { closePicker(); openSingleEq(e); });
+    });
+    document.getElementById('art-bd').classList.add('on');
+    document.getElementById('picker').classList.add('on');
+    return;
+  }
+  openSingleEq(eq);
+}
+
+function openSingleEq(eq) {
+  if (G) {
+    G.controls().autoRotate = false;
+    G.pointOfView({ lat: eq.lat, lng: eq.lng, altitude: 1.8 }, 1200);
+  }
   document.getElementById('ap-cat').textContent = `M${eq.mag.toFixed(1)}`;
   document.getElementById('ap-cat').style.cssText = `color:${eq.color};background:${eq.color}20`;
   document.getElementById('ap-brk').style.display = eq.mag >= 6 ? 'inline-flex' : 'none';
@@ -1556,8 +1603,10 @@ function toggleMarket() {
   document.getElementById('lc-mkt').classList.toggle('on', marketVisible);
   const bar = document.getElementById('market-bar');
   bar.classList.toggle('on', marketVisible);
-  if (marketVisible && marketData.length === 0) fetchMarketData();
-  // Shift scrubber up when market bar is visible
+  if (marketVisible) {
+    if (marketData.length === 0) fetchMarketData();
+    else renderMarketBar(); // re-paint cached data immediately
+  }
   document.getElementById('scrubber').style.bottom = marketVisible ? '28px' : '0';
   document.documentElement.style.setProperty('--scrb-h', marketVisible ? '82px' : '54px');
 }
