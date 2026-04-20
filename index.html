@@ -250,7 +250,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 .hm-blob{border-radius:50%;pointer-events:none;transform:translate(-50%,-50%)}
 
 /* ── SCRUBBER BAR ───────────────────── */
-#scrubber{position:fixed;bottom:0;left:0;right:0;height:var(--scrb-h);z-index:100;background:rgba(3,4,9,.98);border-top:1px solid var(--b1);display:flex;align-items:center;padding:0 20px;gap:14px}
+#scrubber{position:fixed;bottom:0;left:0;right:0;height:54px;z-index:100;background:rgba(3,4,9,.98);border-top:1px solid var(--b1);display:flex;align-items:center;padding:0 20px;gap:14px}
 .scrb-lbl{font-family:var(--f-mono);font-size:7.5px;letter-spacing:.18em;color:var(--t3);white-space:nowrap;flex-shrink:0}
 .scrb-track{flex:1;position:relative;padding-bottom:14px}
 #scrb-range{width:100%;height:2px;-webkit-appearance:none;appearance:none;background:var(--b1);border-radius:1px;outline:none;cursor:pointer}
@@ -274,7 +274,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 .sb-wl-btn.on{border-color:rgba(255,214,10,.35);color:#FFD60A;background:rgba(255,214,10,.06)}
 
 /* ── MARKET TICKER ───────────────────── */
-#market-bar{position:fixed;bottom:var(--scrb-h);left:0;right:0;height:28px;z-index:99;background:rgba(3,4,9,.9);border-top:1px solid var(--b1);display:flex;align-items:center;overflow:hidden;opacity:0;transition:opacity .3s;pointer-events:none}
+#market-bar{position:fixed;bottom:0;left:0;right:0;height:28px;z-index:102;background:rgba(3,4,9,.9);border-top:1px solid var(--b1);display:flex;align-items:center;overflow:hidden;opacity:0;transition:opacity .3s;pointer-events:none}
 #market-bar.on{opacity:1;pointer-events:all}
 .mkt-item{display:inline-flex;align-items:center;gap:7px;padding:0 20px;font-family:var(--f-mono);font-size:9.5px;white-space:nowrap;flex-shrink:0}
 .mkt-sym{color:var(--t2);font-weight:500}
@@ -1695,7 +1695,9 @@ function toggleMarket() {
     renderMarketBar();
     fetchMarketData(); // refresh in background; will re-render when done
   }
+  // Market bar slides in at bottom:0; scrubber shifts up above it
   document.getElementById('scrubber').style.bottom = marketVisible ? '28px' : '0';
+  // --scrb-h drives reset-btn, coords, and sidebar clearance
   document.documentElement.style.setProperty('--scrb-h', marketVisible ? '82px' : '54px');
 }
 
