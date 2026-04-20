@@ -270,7 +270,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 .nc-star{width:20px;height:20px;background:none;border:none;cursor:pointer;color:var(--t3);display:flex;align-items:center;justify-content:center;padding:0;transition:color .18s;flex-shrink:0}
 .nc-star.saved{color:#FFD60A}
 .nc-star:hover{color:var(--t2)}
-.sb-wl-btn{width:28px;height:28px;border:1px solid var(--b1);background:none;border-radius:2px;font-size:16px;line-height:1;color:var(--t3);cursor:pointer;transition:all .18s;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sb-wl-btn{width:24px;height:24px;border:1px solid var(--b1);background:none;border-radius:2px;font-size:12px;line-height:1;color:var(--t3);cursor:pointer;transition:all .18s;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .sb-wl-btn.on{border-color:rgba(255,214,10,.35);color:#FFD60A;background:rgba(255,214,10,.06)}
 
 /* ── MARKET BAR (horizontal, below header, left of sidebar) ── */
@@ -1286,7 +1286,7 @@ function initTicker() {
       ${s.title}
     </span>`).join('');
   const halfW = el.scrollWidth / 2;
-  const dur = Math.round(halfW / 50); // 50px/s — same as market bar
+  const dur = Math.round(halfW / 120); // 120px/s
   void el.offsetWidth;
   el.style.animation = `tkr-scroll ${dur}s linear infinite`;
 }
