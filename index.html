@@ -29,6 +29,7 @@
   --sb-w:368px;
   --hdr-h:58px;
   --tkr-h:38px;
+  --scrb-h:54px;
   --f-brand:'Syne',sans-serif;
   --f-head:'Fraunces',serif;
   --f-ui:'Manrope',sans-serif;
@@ -215,9 +216,117 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 .ri-dot{width:4px;height:4px;border-radius:50%;background:var(--t3);flex-shrink:0;transition:background .3s}
 #refresh-ind.refreshing .ri-dot{background:var(--tec);animation:dot-blink 1.4s ease-in-out infinite}
 
+/* ── SIDEBAR (adjusted for scrubber) ── */
+#sidebar{bottom:var(--scrb-h) !important}
+
 /* ── SIDEBAR TAB ────────────────────── */
 #sb-tab{position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:101;width:22px;height:58px;background:var(--glass-card);backdrop-filter:blur(16px);border:1px solid var(--b1);border-right:none;border-radius:4px 0 0 4px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--t3);font-size:12px;transition:all .15s}
 #sb-tab:hover{border-color:var(--b2);color:var(--t1)}
+
+/* ── LAYER CONTROLS ─────────────────── */
+#layer-ctrl{display:flex;align-items:center;gap:4px;flex-shrink:0}
+.lc-btn{height:26px;padding:0 9px;border:1px solid var(--b1);background:none;border-radius:2px;font-family:var(--f-mono);font-size:8px;letter-spacing:.1em;color:var(--t3);cursor:pointer;transition:all .18s;white-space:nowrap;display:flex;align-items:center;gap:5px}
+.lc-btn:hover{border-color:var(--b2);color:var(--t2)}
+.lc-btn.on{border-color:color-mix(in srgb,var(--lc,#0A84FF) 50%,transparent);color:var(--lc,#0A84FF);background:color-mix(in srgb,var(--lc,#0A84FF) 8%,transparent)}
+.lc-pip{width:5px;height:5px;border-radius:50%;background:var(--lc,#0A84FF);flex-shrink:0}
+
+/* ── SENTIMENT ON CAT RAIL ──────────── */
+.cat-sent{font-family:var(--f-mono);font-size:9px;flex-shrink:0;opacity:.85}
+
+/* ── EARTHQUAKE MARKERS ─────────────── */
+.eq-m{transform:translate(-50%,-50%);cursor:pointer;position:relative}
+.eq-core{width:10px;height:10px;transform:rotate(45deg);position:relative;z-index:2;transition:transform .15s}
+.eq-m:hover .eq-core{transform:rotate(45deg) scale(1.6)}
+.eq-wave{position:absolute;top:50%;left:50%;border-radius:50%;border:1.5px solid currentColor;transform:translate(-50%,-50%) scale(.3);animation:eq-expand 2.8s ease-out infinite;opacity:0;pointer-events:none}
+.eq-w2{animation-delay:.9s}.eq-w3{animation-delay:1.8s}
+@keyframes eq-expand{0%{transform:translate(-50%,-50%) scale(.3);opacity:.85}100%{transform:translate(-50%,-50%) scale(4.5);opacity:0}}
+.eq-tip{position:absolute;left:14px;top:50%;transform:translateY(-50%);background:rgba(3,4,9,.95);border:1px solid rgba(255,255,255,.1);border-radius:3px;padding:5px 10px;font-family:var(--f-ui);font-size:10px;color:var(--t1);white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .13s;backdrop-filter:blur(10px)}
+.eq-m:hover .eq-tip{opacity:1}
+.eq-mag{font-family:var(--f-mono);font-size:8px;font-weight:500;letter-spacing:.08em}
+
+/* ── HEAT MAP BLOBS ─────────────────── */
+.hm-blob{border-radius:50%;pointer-events:none;transform:translate(-50%,-50%)}
+
+/* ── SCRUBBER BAR ───────────────────── */
+#scrubber{position:fixed;bottom:0;left:0;right:0;height:var(--scrb-h);z-index:100;background:rgba(3,4,9,.98);border-top:1px solid var(--b1);display:flex;align-items:center;padding:0 20px;gap:14px}
+.scrb-lbl{font-family:var(--f-mono);font-size:7.5px;letter-spacing:.18em;color:var(--t3);white-space:nowrap;flex-shrink:0}
+.scrb-track{flex:1;position:relative;padding-bottom:14px}
+#scrb-range{width:100%;height:2px;-webkit-appearance:none;appearance:none;background:var(--b1);border-radius:1px;outline:none;cursor:pointer}
+#scrb-range::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;border-radius:50%;background:var(--tec);border:2px solid rgba(255,255,255,.4);cursor:grab;box-shadow:0 0 6px rgba(10,132,255,.5)}
+#scrb-range::-webkit-slider-thumb:active{cursor:grabbing}
+.scrb-ticks{display:flex;justify-content:space-between;margin-top:5px;padding:0 1px}
+.scrb-tick{font-family:var(--f-mono);font-size:7px;color:var(--t3)}
+.scrb-tick.now{color:var(--tec)}
+#scrb-badge{display:flex;align-items:center;gap:6px;padding:4px 10px;border-radius:2px;font-family:var(--f-mono);font-size:8.5px;flex-shrink:0;cursor:pointer;transition:all .2s;border:1px solid rgba(10,132,255,.35);color:var(--tec);background:rgba(10,132,255,.08)}
+#scrb-badge.past{border-color:rgba(255,159,10,.35);color:var(--mil);background:rgba(255,159,10,.06)}
+.scrb-dot{width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0;animation:dot-blink 1.4s ease-in-out infinite}
+#scrb-badge.past .scrb-dot{animation:none}
+#scrb-time-lbl{font-family:var(--f-mono);font-size:10px;min-width:140px;color:var(--t2);flex-shrink:0;text-align:center}
+
+/* ── WATCHLIST STAR ──────────────────── */
+.nc-star{width:18px;height:18px;background:none;border:none;cursor:pointer;color:var(--t3);display:flex;align-items:center;justify-content:center;padding:0;margin-left:auto;transition:color .18s;flex-shrink:0}
+.nc-star.saved{color:#FFD60A}
+.nc-star:hover{color:var(--t2)}
+.sb-wl-btn{padding:3px 8px;border:1px solid var(--b1);background:none;border-radius:2px;font-family:var(--f-mono);font-size:8px;letter-spacing:.1em;color:var(--t3);cursor:pointer;transition:all .18s}
+.sb-wl-btn.on{border-color:rgba(255,214,10,.35);color:#FFD60A;background:rgba(255,214,10,.06)}
+
+/* ── MARKET TICKER ───────────────────── */
+#market-bar{position:fixed;bottom:var(--scrb-h);left:0;right:0;height:28px;z-index:99;background:rgba(3,4,9,.9);border-top:1px solid var(--b1);display:flex;align-items:center;overflow:hidden;opacity:0;transition:opacity .3s;pointer-events:none}
+#market-bar.on{opacity:1;pointer-events:all}
+.mkt-item{display:inline-flex;align-items:center;gap:7px;padding:0 20px;font-family:var(--f-mono);font-size:9.5px;white-space:nowrap;flex-shrink:0}
+.mkt-sym{color:var(--t2);font-weight:500}
+.mkt-price{color:var(--t1)}
+.mkt-chg{font-size:8.5px}
+.mkt-up{color:#30D158}.mkt-dn{color:#FF2D55}.mkt-nt{color:var(--t3)}
+.mkt-sep{width:1px;height:14px;background:var(--b1);flex-shrink:0}
+
+/* ── ANALYST MODE ────────────────────── */
+#analyst-overlay{position:fixed;inset:0;z-index:600;background:#06070f;display:flex;flex-direction:column;opacity:0;pointer-events:none;transition:opacity .35s}
+#analyst-overlay.on{opacity:1;pointer-events:all}
+.am-bar{height:48px;background:#080a14;border-bottom:1px solid #111830;display:flex;align-items:center;padding:0 20px;gap:16px;flex-shrink:0}
+.am-wordmark{font-family:var(--f-mono);font-size:9px;letter-spacing:.32em;color:#00D4FF;font-weight:500;flex-shrink:0}
+.am-status-line{font-family:var(--f-mono);font-size:8px;color:#1e2840;letter-spacing:.15em;flex:1}
+.am-bar-acts{display:flex;gap:6px;flex-shrink:0}
+.am-act{padding:5px 13px;border:1px solid #111830;background:none;color:#3a4860;font-family:var(--f-mono);font-size:8px;letter-spacing:.12em;cursor:pointer;border-radius:2px;transition:all .18s}
+.am-act:hover{border-color:#00D4FF;color:#00D4FF;background:rgba(0,212,255,.05)}
+.am-act.danger:hover{border-color:#FF1744;color:#FF1744;background:rgba(255,23,68,.05)}
+.am-close-btn{padding:5px 14px;border:1px solid rgba(255,23,68,.3);background:none;color:rgba(255,80,80,.7);font-family:var(--f-mono);font-size:8px;letter-spacing:.15em;cursor:pointer;border-radius:2px;transition:all .18s}
+.am-close-btn:hover{border-color:#FF1744;color:#FF1744;background:rgba(255,23,68,.07)}
+
+.am-body{flex:1;display:grid;grid-template-columns:310px 1fr 340px;overflow:hidden;min-height:0}
+.am-col{border-right:1px solid #0a0c18;display:flex;flex-direction:column;overflow:hidden}
+.am-col:last-child{border-right:none}
+.am-col-hdr{padding:10px 16px;border-bottom:1px solid #0a0c18;display:flex;align-items:center;gap:10px;flex-shrink:0;background:#060811}
+.am-col-title{font-family:var(--f-mono);font-size:8px;letter-spacing:.22em;color:#00D4FF}
+.am-col-meta{font-family:var(--f-mono);font-size:7.5px;color:#1a2030;margin-left:auto}
+
+.am-asset-scroll{flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:7px;scrollbar-width:thin;scrollbar-color:#0a0c18 transparent}
+.am-asset-empty{flex:1;display:flex;align-items:center;justify-content:center;font-family:var(--f-mono);font-size:8.5px;color:#0e1020;letter-spacing:.18em;border:1px dashed #0a0c18;margin:14px;border-radius:3px;text-align:center;line-height:2;padding:20px}
+.am-card{background:#080a14;border:1px solid #111830;border-radius:3px;padding:11px 13px 10px;position:relative;transition:border-color .18s}
+.am-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--ac);border-radius:1px}
+.am-card:hover{border-color:#1a2240}
+.am-card-cat{font-family:var(--f-mono);font-size:7px;letter-spacing:.14em;margin-bottom:5px}
+.am-card-title{font-family:var(--f-head);font-size:12px;line-height:1.4;color:#607090;margin-bottom:4px}
+.am-card-meta{font-family:var(--f-mono);font-size:8px;color:#1e2840;display:flex;gap:8px;flex-wrap:wrap}
+.am-card-rm{position:absolute;top:8px;right:8px;width:18px;height:18px;border:1px solid #111830;background:none;color:#1e2840;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:1px;font-family:monospace;transition:all .15s;line-height:1}
+.am-card-rm:hover{border-color:#FF1744;color:#FF1744}
+
+#am-canvas{width:100%;height:100%;display:block;background:#06070f}
+.am-net-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;font-family:var(--f-mono);font-size:8.5px;color:#0e1020;letter-spacing:.18em;pointer-events:none;line-height:2;padding:20px}
+
+.am-brief-scroll{flex:1;overflow-y:auto;padding:16px;scrollbar-width:thin;scrollbar-color:#0a0c18 transparent}
+.am-classify{font-family:var(--f-mono);font-size:7px;letter-spacing:.2em;color:rgba(255,23,68,.6);margin-bottom:14px;display:flex;align-items:center;gap:10px}
+.am-classify::before,.am-classify::after{content:'';flex:1;height:1px;background:rgba(255,23,68,.12)}
+.am-brief-sec{margin-bottom:16px}
+.am-brief-sh{font-family:var(--f-mono);font-size:7.5px;letter-spacing:.2em;color:#00D4FF;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.am-brief-sh::after{content:'';flex:1;height:1px;background:rgba(0,212,255,.1)}
+.am-brief-p{font-family:var(--f-ui);font-size:11px;line-height:1.85;color:#3a4a60}
+.am-entities{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.am-ent{padding:2px 8px;border:1px solid #0e1020;border-radius:2px;font-family:var(--f-mono);font-size:7.5px;color:#1e2840;background:#060810}
+.am-ent.hi{border-color:rgba(0,212,255,.2);color:#00A0C0}
+.am-brief-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#0e1020;font-family:var(--f-mono);font-size:8.5px;letter-spacing:.18em;line-height:2.5;padding:20px}
+.am-synth-btn{margin-top:12px;padding:7px 18px;border:1px solid rgba(0,212,255,.25);background:none;color:rgba(0,212,255,.6);font-family:var(--f-mono);font-size:8px;letter-spacing:.15em;cursor:pointer;border-radius:2px;transition:all .2s}
+.am-synth-btn:hover{border-color:#00D4FF;color:#00D4FF;background:rgba(0,212,255,.06)}
 </style>
 </head>
 <body>
@@ -245,6 +354,13 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
   </div>
   <div class="live-badge"><div class="live-dot"></div><span class="live-txt">LIVE</span></div>
   <div class="hdr-gap"></div>
+  <div id="layer-ctrl">
+    <button class="lc-btn" id="lc-eq"  style="--lc:#FF2D55" onclick="toggleEQ()"       title="Earthquake overlay"><span class="lc-pip"></span>QUAKES</button>
+    <button class="lc-btn" id="lc-hm"  style="--lc:#FF9F0A" onclick="toggleHeatmap()"  title="Story heat map"><span class="lc-pip"></span>HEAT</button>
+    <button class="lc-btn" id="lc-mkt" style="--lc:#FFD60A" onclick="toggleMarket()"   title="Market ticker"><span class="lc-pip"></span>MARKET</button>
+    <button class="lc-btn" id="lc-am"  style="--lc:#00D4FF" onclick="openAnalystMode()" title="Analyst mode"><span class="lc-pip"></span>ANALYST</button>
+  </div>
+  <div class="hdr-sep"></div>
   <div class="hdr-stat"><span class="hs-v" id="story-count">20</span><span class="hs-l">Stories</span></div>
   <div class="hdr-sep"></div>
   <div id="dnd"><span class="dnd-icon" id="dnd-icon"></span><span id="dnd-lbl">NIGHT</span></div>
@@ -262,11 +378,11 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 <!-- CATEGORY RAIL -->
 <nav id="cat-rail">
   <button class="cat-btn on" data-cat="all"      style="--cc:var(--all)"><div class="cat-pip"></div><span class="cat-lbl">ALL COVERAGE</span><span class="cat-n" id="cn-all">20</span></button>
-  <button class="cat-btn"    data-cat="geo"      style="--cc:var(--geo)"><div class="cat-pip"></div><span class="cat-lbl">GEOPOLITICAL</span><span class="cat-n" id="cn-geo">5</span></button>
-  <button class="cat-btn"    data-cat="military" style="--cc:var(--mil)"><div class="cat-pip"></div><span class="cat-lbl">MILITARY</span><span class="cat-n" id="cn-military">3</span></button>
-  <button class="cat-btn"    data-cat="finance"  style="--cc:var(--fin)"><div class="cat-pip"></div><span class="cat-lbl">FINANCE</span><span class="cat-n" id="cn-finance">5</span></button>
-  <button class="cat-btn"    data-cat="climate"  style="--cc:var(--cli)"><div class="cat-pip"></div><span class="cat-lbl">CLIMATE</span><span class="cat-n" id="cn-climate">3</span></button>
-  <button class="cat-btn"    data-cat="tech"     style="--cc:var(--tec)"><div class="cat-pip"></div><span class="cat-lbl">TECHNOLOGY</span><span class="cat-n" id="cn-tech">4</span></button>
+  <button class="cat-btn"    data-cat="geo"      style="--cc:var(--geo)"><div class="cat-pip"></div><span class="cat-lbl">GEOPOLITICAL</span><span class="cat-n" id="cn-geo">5</span><span class="cat-sent" id="sent-geo">—</span></button>
+  <button class="cat-btn"    data-cat="military" style="--cc:var(--mil)"><div class="cat-pip"></div><span class="cat-lbl">MILITARY</span><span class="cat-n" id="cn-military">3</span><span class="cat-sent" id="sent-military">—</span></button>
+  <button class="cat-btn"    data-cat="finance"  style="--cc:var(--fin)"><div class="cat-pip"></div><span class="cat-lbl">FINANCE</span><span class="cat-n" id="cn-finance">5</span><span class="cat-sent" id="sent-finance">—</span></button>
+  <button class="cat-btn"    data-cat="climate"  style="--cc:var(--cli)"><div class="cat-pip"></div><span class="cat-lbl">CLIMATE</span><span class="cat-n" id="cn-climate">3</span><span class="cat-sent" id="sent-climate">—</span></button>
+  <button class="cat-btn"    data-cat="tech"     style="--cc:var(--tec)"><div class="cat-pip"></div><span class="cat-lbl">TECHNOLOGY</span><span class="cat-n" id="cn-tech">4</span><span class="cat-sent" id="sent-tech">—</span></button>
 </nav>
 
 <!-- SIDEBAR -->
@@ -274,6 +390,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
   <div class="sb-hdr">
     <span class="sb-title">INTELLIGENCE FEED</span>
     <span class="sb-count" id="sb-count">20 STORIES</span>
+    <button class="sb-wl-btn" id="wl-toggle-btn" onclick="toggleWatchlistFilter()" title="Show saved stories">★</button>
     <button class="sb-x" onclick="toggleSidebar()">×</button>
   </div>
   <div id="news-feed"></div>
@@ -325,6 +442,65 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 <button id="reset-btn" onclick="resetGlobe()" title="Reset globe view">
   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
 </button>
+
+<!-- MARKET BAR -->
+<div id="market-bar"></div>
+
+<!-- SCRUBBER -->
+<div id="scrubber">
+  <span class="scrb-lbl">TIMELINE</span>
+  <div class="scrb-track">
+    <input type="range" id="scrb-range" min="0" max="100" value="100">
+    <div class="scrb-ticks" id="scrb-ticks"></div>
+  </div>
+  <div id="scrb-time-lbl">LIVE</div>
+  <div id="scrb-badge" onclick="scrubToLive()"><span class="scrb-dot"></span>LIVE</div>
+</div>
+
+<!-- ANALYST OVERLAY -->
+<div id="analyst-overlay">
+  <div class="am-bar">
+    <span class="am-wordmark">◆ MERIDIAN ANALYST</span>
+    <span class="am-status-line" id="am-status">SYSTEM READY · <span id="am-asset-count">0</span> ASSETS PINNED</span>
+    <div class="am-bar-acts">
+      <button class="am-act" onclick="synthesizeBrief()">SYNTHESIZE</button>
+      <button class="am-act danger" onclick="clearAssets()">CLEAR BOARD</button>
+      <button class="am-act" onclick="exportBrief()">EXPORT</button>
+      <button class="am-close-btn" onclick="closeAnalystMode()">EXIT ANALYST</button>
+    </div>
+  </div>
+  <div class="am-body">
+    <div class="am-col">
+      <div class="am-col-hdr">
+        <span class="am-col-title">◆ ASSET BOARD</span>
+        <span class="am-col-meta" id="am-col-meta">PIN STORIES FROM FEED</span>
+      </div>
+      <div class="am-asset-scroll" id="am-asset-scroll">
+        <div class="am-asset-empty" id="am-asset-empty">DRAG STORIES FROM THE INTELLIGENCE FEED<br>OR CLICK THE PIN ICON ON ANY CARD</div>
+      </div>
+    </div>
+    <div class="am-col" style="position:relative">
+      <div class="am-col-hdr">
+        <span class="am-col-title">◆ ENTITY NETWORK</span>
+        <span class="am-col-meta" id="am-net-meta">NO CONNECTIONS</span>
+      </div>
+      <canvas id="am-canvas"></canvas>
+      <div class="am-net-empty" id="am-net-empty">PIN ASSETS TO REVEAL<br>ENTITY CONNECTIONS</div>
+    </div>
+    <div class="am-col">
+      <div class="am-col-hdr">
+        <span class="am-col-title">◆ INTELLIGENCE BRIEF</span>
+        <span class="am-col-meta" id="am-brief-meta">—</span>
+      </div>
+      <div class="am-brief-scroll" id="am-brief-scroll">
+        <div class="am-brief-empty" id="am-brief-empty">
+          PIN ASSETS AND CLICK SYNTHESIZE<br>TO GENERATE INTELLIGENCE BRIEF
+          <button class="am-synth-btn" onclick="synthesizeBrief()">SYNTHESIZE NOW</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- TICKER -->
 <div id="ticker">
@@ -685,9 +861,12 @@ function applyLiveNews(stories) {
   });
   document.getElementById('story-count').textContent = counts.all;
 
-  // Refresh globe + feed
+  // Archive + render
+  archiveCurrentStories();
+  renderSentiment(NEWS);
   const filtered = activeCat === 'all' ? NEWS : NEWS.filter(s => s.cat === activeCat);
-  refreshGlobeData(filtered);
+  updateAllGlobeElements();
+  applyMeaningfulArcs(filtered);
   renderFeed(filtered);
   initTicker();
 }
@@ -819,48 +998,11 @@ function initGlobe() {
     .atmosphereAltitude(0.17)
     .globeImageUrl(getTexture(tod))
     .bumpImageUrl('//unpkg.com/three-globe/example/img/earth-topology.png')
-    .htmlElementsData(NEWS)
-    .htmlElement(makeMarker)
-    .htmlAltitude(0.02)
-    .ringsData(NEWS.filter(s => s.brk))
-    .ringColor(s => s.color + '55')
-    .ringMaxRadius(4.5)
-    .ringPropagationSpeed(1.4)
-    .ringRepeatPeriod(900)
-    .ringAltitude(0.006)
+    .htmlElementsData([]).htmlElement(makeMarker).htmlAltitude(0.02)
+    .ringsData([]).ringColor(s => (s.color||'#fff')+'55').ringMaxRadius(4.5).ringPropagationSpeed(1.4).ringRepeatPeriod(900).ringAltitude(0.006)
+    .arcsData([]).arcStartLat('slat').arcStartLng('slng').arcEndLat('elat').arcEndLng('elng').arcColor(d=>[d.c1,d.c2]).arcDashLength(0.4).arcDashGap(0.18).arcDashAnimateTime(2400).arcStroke(0.3).arcAltitudeAutoScale(0.3)
+    .pointsData([]).pointLat('lat').pointLng('lng').pointAltitude(0.025).pointRadius(0.55).pointColor(()=>'rgba(0,0,0,0)')
     (document.getElementById('globe-wrap'));
-
-  // Animated arcs between breaking stories
-  const brk = NEWS.filter(s => s.brk);
-  const arcs = [];
-  for (let i = 0; i < brk.length; i++) {
-    for (let j = i + 1; j < brk.length; j++) {
-      if (Math.random() > 0.4) {
-        arcs.push({
-          slat: brk[i].lat, slng: brk[i].lng,
-          elat: brk[j].lat, elng: brk[j].lng,
-          c1: brk[i].color + '30', c2: brk[j].color + '00',
-        });
-      }
-    }
-  }
-  G.arcsData(arcs)
-    .arcStartLat('slat').arcStartLng('slng')
-    .arcEndLat('elat').arcEndLng('elng')
-    .arcColor(d => [d.c1, d.c2])
-    .arcDashLength(0.45).arcDashGap(0.2)
-    .arcDashAnimateTime(2400)
-    .arcStroke(0.35)
-    .arcAltitudeAutoScale(0.38);
-
-  // Invisible click-target points — globe.gl's onPointClick is the reliable click path
-  G.pointsData(NEWS)
-    .pointLat('lat').pointLng('lng')
-    .pointAltitude(0.025)
-    .pointRadius(0.55)
-    .pointColor(() => 'rgba(0,0,0,0)')
-    .onPointClick(story => handleLocationClick(story))
-    .onPointHover(story => { document.body.style.cursor = story ? 'pointer' : ''; });
 
   G.controls().autoRotate = true;
   G.controls().autoRotateSpeed = 0.32;
@@ -880,10 +1022,8 @@ function initGlobe() {
 }
 
 function refreshGlobeData(stories) {
-  if (!G) return;
-  G.htmlElementsData(stories);
-  G.ringsData(stories.filter(s => s.brk));
-  G.pointsData(stories);
+  updateAllGlobeElements();
+  applyMeaningfulArcs(stories);
 }
 
 // ═══════════════════════════════════════════
@@ -924,6 +1064,12 @@ function renderFeed(stories) {
             <span class="nc-src">${s.src}</span>
             ${s.brk ? '<span class="brk">BREAKING</span>' : ''}
             <span class="nc-time">${s.time}</span>
+            <button class="nc-star ${watchlist.includes(s.id)?'saved':''}" onclick="event.stopPropagation();toggleWatchlist(${s.id})" title="Save to watchlist">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="${watchlist.includes(s.id)?'currentColor':'none'}" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            </button>
+            <button class="nc-star" onclick="event.stopPropagation();pinStory(${s.id})" title="Pin to Analyst Mode" style="color:${analystAssets.includes(s.id)?'#00D4FF':'var(--t3)'}">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            </button>
           </div>
           <div class="nc-title">${s.title}</div>
           <div class="nc-sum">${s.summary}</div>
@@ -946,10 +1092,10 @@ function renderFeed(stories) {
 function setCategory(cat) {
   activeCat = cat;
   document.querySelectorAll('.cat-btn').forEach(b => b.classList.toggle('on', b.dataset.cat === cat));
-  const filtered = cat === 'all' ? NEWS : NEWS.filter(s => s.cat === cat);
-  refreshGlobeData(filtered);
+  const filtered = getActiveFeedStories();
+  updateAllGlobeElements();
+  applyMeaningfulArcs(filtered);
   renderFeed(filtered);
-  // Subtle atmosphere tint per category
   if (G) {
     const tod = getTod();
     const tints = {all:null,geo:'#300010',military:'#1a0c00',finance:'#1a1500',climate:'#001a0c',tech:'#000d1a'};
@@ -970,7 +1116,7 @@ function toggleSearch() {
   const inp = document.getElementById('srch');
   inp.classList.toggle('open', searchOpen);
   if (searchOpen) inp.focus();
-  else { inp.value = ''; renderFeed(activeCat === 'all' ? NEWS : NEWS.filter(s => s.cat === activeCat)); }
+  else { inp.value = ''; renderFeed(getActiveFeedStories()); }
 }
 
 function handleSearch(q) {
@@ -1106,16 +1252,642 @@ function initTicker() {
 }
 
 // ═══════════════════════════════════════════
-// CLOCK
+// CLOCK  (local time)
 // ═══════════════════════════════════════════
 function tick() {
   const n = new Date();
   document.getElementById('utc').textContent =
-    [n.getUTCHours(), n.getUTCMinutes(), n.getUTCSeconds()]
+    [n.getHours(), n.getMinutes(), n.getSeconds()]
       .map(x => String(x).padStart(2,'0')).join(':');
   checkDayNight(n.getHours());
+  updateScrubberLiveLabel();
 }
 setInterval(tick, 1000);
+
+// ═══════════════════════════════════════════
+// EARTHQUAKE OVERLAY
+// ═══════════════════════════════════════════
+let EQ_DATA = [];
+let eqVisible = false;
+
+async function fetchEarthquakes() {
+  try {
+    const r = await fetch('https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_day.geojson');
+    const d = await r.json();
+    EQ_DATA = d.features.map(f => ({
+      id: f.id,
+      lat: f.geometry.coordinates[1],
+      lng: f.geometry.coordinates[0],
+      mag: f.properties.mag,
+      place: f.properties.place,
+      depth: Math.round(f.geometry.coordinates[2]),
+      time: new Date(f.properties.time).toLocaleString(),
+      color: f.properties.mag >= 7 ? '#FF2D55' : f.properties.mag >= 6 ? '#FF9F0A' : f.properties.mag >= 5 ? '#FFD60A' : '#30D158',
+      _type: 'earthquake',
+    }));
+    if (eqVisible) updateAllGlobeElements();
+  } catch(e) { console.warn('USGS fetch failed', e); }
+}
+
+function makeEqMarker(eq) {
+  const d = document.createElement('div');
+  d.className = 'eq-m';
+  d.style.color = eq.color;
+  const size = 8 + (eq.mag - 4.5) * 3;
+  d.innerHTML = `
+    <div class="eq-wave" style="border-color:${eq.color};width:${size*2}px;height:${size*2}px"></div>
+    <div class="eq-wave eq-w2" style="border-color:${eq.color};width:${size*2}px;height:${size*2}px"></div>
+    <div class="eq-wave eq-w3" style="border-color:${eq.color};width:${size*2}px;height:${size*2}px"></div>
+    <div class="eq-core" style="width:${size}px;height:${size}px;background:${eq.color};box-shadow:0 0 ${eq.mag>=6?12:6}px ${eq.color}bb"></div>
+    <div class="eq-tip"><span style="color:${eq.color}" class="eq-mag">M${eq.mag.toFixed(1)}</span>  ${eq.place.length > 32 ? eq.place.slice(0,30)+'…' : eq.place}<br><span style="opacity:.5;font-size:9px">Depth: ${eq.depth}km · ${eq.time}</span></div>
+  `;
+  return d;
+}
+
+function toggleEQ() {
+  eqVisible = !eqVisible;
+  document.getElementById('lc-eq').classList.toggle('on', eqVisible);
+  if (eqVisible && EQ_DATA.length === 0) fetchEarthquakes();
+  else updateAllGlobeElements();
+}
+
+// ═══════════════════════════════════════════
+// HEAT MAP
+// ═══════════════════════════════════════════
+let heatmapVisible = false;
+
+function generateHeatBlobs(stories) {
+  const clusters = {};
+  stories.forEach(s => {
+    const key = `${Math.round(s.lat/12)*12}_${Math.round(s.lng/12)*12}`;
+    if (!clusters[key]) clusters[key] = { lat:0, lng:0, count:0, colors:[] };
+    clusters[key].lat += s.lat; clusters[key].lng += s.lng;
+    clusters[key].count++; clusters[key].colors.push(s.color);
+  });
+  return Object.values(clusters).map(c => ({
+    lat: c.lat/c.count, lng: c.lng/c.count,
+    count: c.count, color: c.colors[0], _type: 'heat',
+  }));
+}
+
+function makeHeatBlob(blob) {
+  const d = document.createElement('div');
+  const sz = 60 + blob.count * 22;
+  d.className = 'hm-blob';
+  d.style.cssText = `width:${sz}px;height:${sz}px;background:radial-gradient(circle,${blob.color}28 0%,${blob.color}0a 50%,transparent 70%)`;
+  return d;
+}
+
+function toggleHeatmap() {
+  heatmapVisible = !heatmapVisible;
+  document.getElementById('lc-hm').classList.toggle('on', heatmapVisible);
+  updateAllGlobeElements();
+}
+
+// ═══════════════════════════════════════════
+// COMBINED GLOBE ELEMENT UPDATER
+// ═══════════════════════════════════════════
+function updateAllGlobeElements() {
+  if (!G) return;
+  const stories = activeCat === 'all' ? NEWS : NEWS.filter(s => s.cat === activeCat);
+  const visual = stories.map(s => ({...s, _type:'story'}));
+  if (eqVisible) EQ_DATA.forEach(e => visual.push(e));
+  if (heatmapVisible) generateHeatBlobs(stories).forEach(b => visual.push(b));
+
+  G.htmlElementsData(visual).htmlElement(item => {
+    if (item._type === 'earthquake') return makeEqMarker(item);
+    if (item._type === 'heat') return makeHeatBlob(item);
+    return makeMarker(item);
+  });
+
+  const clickTargets = [...stories];
+  if (eqVisible) EQ_DATA.forEach(e => clickTargets.push(e));
+  G.pointsData(clickTargets)
+    .pointLat('lat').pointLng('lng')
+    .pointAltitude(0.025).pointRadius(0.55)
+    .pointColor(() => 'rgba(0,0,0,0)')
+    .onPointClick(item => {
+      if (item._type === 'earthquake') showEqInfo(item);
+      else handleLocationClick(item);
+    })
+    .onPointHover(item => { document.body.style.cursor = item ? 'pointer' : ''; });
+
+  G.ringsData([...stories.filter(s => s.brk), ...EQ_DATA.filter(e => e.mag >= 6.5)])
+    .ringColor(s => (s.color || '#FF2D55') + '55')
+    .ringMaxRadius(s => s.mag ? s.mag * 0.7 : 4.5)
+    .ringPropagationSpeed(s => s.mag ? s.mag * 0.25 : 1.4)
+    .ringRepeatPeriod(900).ringAltitude(0.006);
+}
+
+function showEqInfo(eq) {
+  if (!G) return;
+  G.controls().autoRotate = false;
+  G.pointOfView({ lat: eq.lat, lng: eq.lng, altitude: 1.8 }, 1200);
+  document.getElementById('ap-cat').textContent = `M${eq.mag.toFixed(1)}`;
+  document.getElementById('ap-cat').style.cssText = `color:${eq.color};background:${eq.color}20`;
+  document.getElementById('ap-brk').style.display = eq.mag >= 6 ? 'inline-flex' : 'none';
+  document.getElementById('ap-title').textContent = eq.place;
+  document.getElementById('ap-src').textContent = 'USGS';
+  document.getElementById('ap-time').textContent = eq.time;
+  document.getElementById('ap-region').textContent = `Depth: ${eq.depth}km`;
+  document.getElementById('ap-lead').textContent = `Magnitude ${eq.mag.toFixed(1)} earthquake detected. Focal depth: ${eq.depth}km.`;
+  document.getElementById('ap-text').textContent = `This seismic event was recorded by the USGS National Earthquake Information Center. Events above M6.0 have potential for significant shaking at the epicenter.`;
+  document.getElementById('ap-link').style.display = 'inline-flex';
+  document.getElementById('ap-link').href = `https://earthquake.usgs.gov/earthquakes/eventpage/${eq.id}/executive`;
+  document.getElementById('ap-cdot').style.background = eq.color;
+  const la = eq.lat >= 0 ? eq.lat.toFixed(3)+'°N' : Math.abs(eq.lat).toFixed(3)+'°S';
+  const ln = eq.lng >= 0 ? eq.lng.toFixed(3)+'°E' : Math.abs(eq.lng).toFixed(3)+'°W';
+  document.getElementById('ap-coords').textContent = `${la}, ${ln}`;
+  document.getElementById('art-panel').classList.add('on');
+  document.getElementById('art-bd').classList.add('on');
+}
+
+// ═══════════════════════════════════════════
+// MEANINGFUL ARCS — entity-based connections
+// ═══════════════════════════════════════════
+const SHARED_ENTITIES = [
+  'US','China','Russia','NATO','EU','Iran','Ukraine','Israel','Taiwan','India',
+  'Saudi','Japan','Korea','UK','France','Germany','Turkey','Pakistan',
+  'Fed','ECB','OPEC','IMF','UN','WTO',
+  'Oil','Dollar','Bitcoin','Gold','Rate','Inflation',
+  'AI','Chip','Semiconductor','Nuclear','Climate','Election',
+];
+
+function computeMeaningfulArcs(stories) {
+  const storyEnts = stories.map(s => ({
+    s,
+    ents: SHARED_ENTITIES.filter(e =>
+      s.title.toLowerCase().includes(e.toLowerCase()) ||
+      (s.summary||'').toLowerCase().includes(e.toLowerCase())
+    ),
+  }));
+  const arcs = [];
+  for (let i = 0; i < storyEnts.length; i++) {
+    for (let j = i+1; j < storyEnts.length; j++) {
+      const shared = storyEnts[i].ents.filter(e => storyEnts[j].ents.includes(e));
+      if (!shared.length) continue;
+      // Don't arc stories at same location
+      const dist = Math.sqrt(Math.pow(storyEnts[i].s.lat - storyEnts[j].s.lat, 2) + Math.pow(storyEnts[i].s.lng - storyEnts[j].s.lng, 2));
+      if (dist < 1) continue;
+      arcs.push({
+        slat: storyEnts[i].s.lat, slng: storyEnts[i].s.lng,
+        elat: storyEnts[j].s.lat, elng: storyEnts[j].s.lng,
+        c1: storyEnts[i].s.color + '45', c2: storyEnts[j].s.color + '00',
+        strength: shared.length, label: shared.slice(0,2).join(', '),
+      });
+    }
+  }
+  return arcs.sort((a,b) => b.strength - a.strength).slice(0, 18);
+}
+
+function applyMeaningfulArcs(stories) {
+  if (!G) return;
+  const arcs = computeMeaningfulArcs(stories);
+  G.arcsData(arcs)
+    .arcStartLat('slat').arcStartLng('slng').arcEndLat('elat').arcEndLng('elng')
+    .arcColor(d => [d.c1, d.c2])
+    .arcDashLength(0.4).arcDashGap(0.18)
+    .arcDashAnimateTime(d => 2000 + d.strength * 300)
+    .arcStroke(d => 0.2 + d.strength * 0.1)
+    .arcAltitudeAutoScale(0.3);
+}
+
+// ═══════════════════════════════════════════
+// SENTIMENT PULSE
+// ═══════════════════════════════════════════
+const SENT_LEX = {
+  geo: {
+    pos: ['ceasefire','peace','agreement','talks','diplomat','treaty','withdrawal','accord'],
+    neg: ['war','invasion','attack','crisis','nuclear','escalat','bomb','strike','threat','conflict'],
+  },
+  military: {
+    pos: ['withdrawal','peacekeep','negotiat','ceasefire','deescalat'],
+    neg: ['combat','deploy','missile','airstrike','troops','attack','offensive','drone strike'],
+  },
+  finance: {
+    pos: ['surge','rally','gain','record high','growth','profit','bull','rise','recovery','beat'],
+    neg: ['crash','fall','decline','recession','loss','bear','drop','debt crisis','default','sell-off'],
+  },
+  climate: {
+    pos: ['record low','renewable','net zero','agreement','reforestation','clean energy','accord'],
+    neg: ['record high','wildfire','flood','drought','emission','crisis','catastrophe','ice loss'],
+  },
+  tech: {
+    pos: ['breakthrough','launch','record','partnership','acquisition','advance','released'],
+    neg: ['breach','ban','restrict','fine','outage','hack','vulnerability','recall'],
+  },
+};
+
+function computeSentiment(stories) {
+  const results = {};
+  for (const cat of ['geo','military','finance','climate','tech']) {
+    const catStories = stories.filter(s => s.cat === cat);
+    if (!catStories.length) { results[cat] = 0; continue; }
+    const text = catStories.map(s => `${s.title} ${s.summary||''}`).join(' ').toLowerCase();
+    const lex = SENT_LEX[cat];
+    let score = 0;
+    lex.pos.forEach(w => { if (text.includes(w)) score++; });
+    lex.neg.forEach(w => { if (text.includes(w)) score--; });
+    results[cat] = Math.max(-3, Math.min(3, score));
+  }
+  return results;
+}
+
+function renderSentiment(stories) {
+  const s = computeSentiment(stories);
+  for (const [cat, score] of Object.entries(s)) {
+    const el = document.getElementById(`sent-${cat}`);
+    if (!el) continue;
+    if (score > 0)      { el.textContent = '↑'; el.style.color = '#30D158'; }
+    else if (score < 0) { el.textContent = '↓'; el.style.color = '#FF2D55'; }
+    else                { el.textContent = '→'; el.style.color = '#FF9F0A'; }
+  }
+}
+
+// ═══════════════════════════════════════════
+// MARKET DATA  (CoinGecko — free, no key)
+// ═══════════════════════════════════════════
+let marketVisible = false;
+let marketData = [];
+
+async function fetchMarketData() {
+  try {
+    const [cryptoRes, fxRes] = await Promise.allSettled([
+      fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,gold&vs_currencies=usd&include_24hr_change=true'),
+      fetch('https://api.frankfurter.app/latest?from=USD&to=EUR,GBP,JPY'),
+    ]);
+    const items = [];
+    if (cryptoRes.status === 'fulfilled') {
+      const d = await cryptoRes.value.json();
+      if (d.bitcoin)  items.push({ sym:'BTC', price: formatPrice(d.bitcoin.usd), chg: d.bitcoin.usd_24h_change });
+      if (d.ethereum) items.push({ sym:'ETH', price: formatPrice(d.ethereum.usd), chg: d.ethereum.usd_24h_change });
+    }
+    if (fxRes.status === 'fulfilled') {
+      const d = await fxRes.value.json();
+      if (d.rates) {
+        if (d.rates.EUR) items.push({ sym:'EUR/USD', price: (1/d.rates.EUR).toFixed(4), chg: null });
+        if (d.rates.GBP) items.push({ sym:'GBP/USD', price: (1/d.rates.GBP).toFixed(4), chg: null });
+        if (d.rates.JPY) items.push({ sym:'USD/JPY', price: d.rates.JPY.toFixed(2), chg: null });
+      }
+    }
+    marketData = items;
+    renderMarketBar();
+  } catch(e) {}
+}
+
+function formatPrice(n) {
+  return n >= 1000 ? n.toLocaleString('en-US', {maximumFractionDigits:0}) : n.toFixed(2);
+}
+
+function renderMarketBar() {
+  const bar = document.getElementById('market-bar');
+  if (!bar) return;
+  bar.innerHTML = marketData.map((m, i) => `
+    ${i > 0 ? '<div class="mkt-sep"></div>' : ''}
+    <div class="mkt-item">
+      <span class="mkt-sym">${m.sym}</span>
+      <span class="mkt-price">${m.price}</span>
+      ${m.chg != null ? `<span class="mkt-chg ${m.chg >= 0 ? 'mkt-up' : 'mkt-dn'}">${m.chg >= 0 ? '▲' : '▼'} ${Math.abs(m.chg).toFixed(2)}%</span>` : ''}
+    </div>`).join('');
+}
+
+function toggleMarket() {
+  marketVisible = !marketVisible;
+  document.getElementById('lc-mkt').classList.toggle('on', marketVisible);
+  const bar = document.getElementById('market-bar');
+  bar.classList.toggle('on', marketVisible);
+  if (marketVisible && marketData.length === 0) fetchMarketData();
+  // Shift scrubber up when market bar is visible
+  document.getElementById('scrubber').style.bottom = marketVisible ? '28px' : '0';
+  document.documentElement.style.setProperty('--scrb-h', marketVisible ? '82px' : '54px');
+}
+
+// ═══════════════════════════════════════════
+// WATCHLIST
+// ═══════════════════════════════════════════
+let watchlist = JSON.parse(localStorage.getItem('meridian_wl') || '[]');
+let watchlistFilter = false;
+
+function toggleWatchlist(storyId) {
+  const idx = watchlist.indexOf(storyId);
+  if (idx === -1) watchlist.push(storyId);
+  else watchlist.splice(idx, 1);
+  localStorage.setItem('meridian_wl', JSON.stringify(watchlist));
+  renderFeed(getActiveFeedStories());
+}
+
+function toggleWatchlistFilter() {
+  watchlistFilter = !watchlistFilter;
+  document.getElementById('wl-toggle-btn').classList.toggle('on', watchlistFilter);
+  renderFeed(getActiveFeedStories());
+}
+
+function getActiveFeedStories() {
+  let pool = activeCat === 'all' ? NEWS : NEWS.filter(s => s.cat === activeCat);
+  if (watchlistFilter) pool = pool.filter(s => watchlist.includes(s.id));
+  return pool;
+}
+
+// ═══════════════════════════════════════════
+// HISTORICAL SCRUBBER
+// ═══════════════════════════════════════════
+const STORY_ARCHIVE = []; // { ts, stories[] }
+let scrubLive = true;
+let scrubPlayTimer = null;
+
+function archiveCurrentStories() {
+  if (!NEWS.length) return;
+  const now = Date.now();
+  STORY_ARCHIVE.push({ ts: now, stories: NEWS.map(s => ({...s})) });
+  // Keep only last 24h (max 50 snapshots)
+  const cutoff = now - 24 * 60 * 60 * 1000;
+  while (STORY_ARCHIVE.length > 50 || (STORY_ARCHIVE.length > 0 && STORY_ARCHIVE[0].ts < cutoff)) {
+    STORY_ARCHIVE.shift();
+  }
+}
+
+function initScrubber() {
+  const ticks = document.getElementById('scrb-ticks');
+  const labels = [];
+  for (let i = 24; i >= 0; i -= 4) {
+    labels.push(`<span class="scrb-tick${i===0?' now':''}">${i===0?'NOW':'-'+i+'h'}</span>`);
+  }
+  ticks.innerHTML = labels.join('');
+
+  document.getElementById('scrb-range').addEventListener('input', function() {
+    const v = parseInt(this.value);
+    scrubLive = v === 100;
+    document.getElementById('scrb-badge').classList.toggle('past', !scrubLive);
+    if (scrubLive) {
+      document.getElementById('scrb-time-lbl').textContent = 'LIVE';
+      if (STORY_ARCHIVE.length > 0) applyScrubSnapshot(STORY_ARCHIVE[STORY_ARCHIVE.length - 1]);
+    } else {
+      const hoursAgo = (100 - v) * 0.24;
+      const targetTs = Date.now() - hoursAgo * 3600000;
+      const d = new Date(targetTs);
+      document.getElementById('scrb-time-lbl').textContent =
+        d.toLocaleDateString([], {month:'short',day:'numeric'}) + ' ' +
+        d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+      // Apply time-of-day globe texture based on scrub hour
+      const h = d.getHours();
+      const scrubTod = h < 6 || h >= 20 ? 'night' : h < 8 ? 'dawn' : h < 18 ? 'day' : 'dusk';
+      if (G) {
+        if (scrubTod === 'night') {
+          G.globeImageUrl('//unpkg.com/three-globe/example/img/earth-night.jpg');
+          G.atmosphereColor('#030a28');
+          G.atmosphereAltitude(0.22);
+        } else {
+          G.globeImageUrl(getTexture(scrubTod));
+          G.atmosphereColor(getAtmos(scrubTod));
+          G.atmosphereAltitude(0.17);
+        }
+      }
+      // Show nearest archived snapshot
+      if (STORY_ARCHIVE.length > 0) {
+        const nearest = STORY_ARCHIVE.reduce((best, snap) =>
+          Math.abs(snap.ts - targetTs) < Math.abs(best.ts - targetTs) ? snap : best
+        );
+        applyScrubSnapshot(nearest);
+      }
+    }
+  });
+}
+
+function applyScrubSnapshot(snap) {
+  const filtered = activeCat === 'all' ? snap.stories : snap.stories.filter(s => s.cat === activeCat);
+  renderFeed(filtered);
+  if (G) {
+    G.htmlElementsData(filtered.map(s => ({...s, _type:'story'}))).htmlElement(makeMarker);
+    G.pointsData(filtered).pointLat('lat').pointLng('lng')
+      .pointAltitude(0.025).pointRadius(0.55).pointColor(() => 'rgba(0,0,0,0)')
+      .onPointClick(s => handleLocationClick(s)).onPointHover(s => { document.body.style.cursor = s ? 'pointer' : ''; });
+  }
+}
+
+function updateScrubberLiveLabel() {
+  if (!scrubLive) return;
+  const n = new Date();
+  document.getElementById('scrb-time-lbl').textContent =
+    n.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+}
+
+function scrubToLive() {
+  scrubLive = true;
+  document.getElementById('scrb-range').value = 100;
+  document.getElementById('scrb-badge').classList.remove('past');
+  if (lastTod) { G && G.globeImageUrl(getTexture(lastTod)); G && G.atmosphereColor(getAtmos(lastTod)); G && G.atmosphereAltitude(0.17); }
+  const filtered = getActiveFeedStories();
+  renderFeed(filtered);
+  updateAllGlobeElements();
+}
+
+// ═══════════════════════════════════════════
+// ANALYST MODE
+// ═══════════════════════════════════════════
+let analystAssets = []; // pinned story ids
+let analystGraph = null;
+let analystAnimId = null;
+
+function openAnalystMode() {
+  document.getElementById('analyst-overlay').classList.add('on');
+  document.getElementById('lc-am').classList.add('on');
+  renderAnalystBoard();
+  resizeAnalystCanvas();
+  runAnalystGraph();
+}
+
+function closeAnalystMode() {
+  document.getElementById('analyst-overlay').classList.remove('on');
+  document.getElementById('lc-am').classList.remove('on');
+  if (analystAnimId) { cancelAnimationFrame(analystAnimId); analystAnimId = null; }
+}
+
+function pinStory(storyId) {
+  if (analystAssets.includes(storyId)) return;
+  analystAssets.push(storyId);
+  renderAnalystBoard();
+  if (document.getElementById('analyst-overlay').classList.contains('on')) runAnalystGraph();
+  updateAnalystStatus();
+}
+
+function unpinStory(storyId) {
+  analystAssets = analystAssets.filter(id => id !== storyId);
+  renderAnalystBoard();
+  if (document.getElementById('analyst-overlay').classList.contains('on')) runAnalystGraph();
+  updateAnalystStatus();
+}
+
+function clearAssets() {
+  analystAssets = [];
+  renderAnalystBoard();
+  runAnalystGraph();
+  updateAnalystStatus();
+  document.getElementById('am-brief-scroll').innerHTML = '<div class="am-brief-empty" id="am-brief-empty">PIN ASSETS AND CLICK SYNTHESIZE<br>TO GENERATE INTELLIGENCE BRIEF<button class="am-synth-btn" onclick="synthesizeBrief()">SYNTHESIZE NOW</button></div>';
+}
+
+function updateAnalystStatus() {
+  document.getElementById('am-asset-count').textContent = analystAssets.length;
+  document.getElementById('am-col-meta').textContent = analystAssets.length ? `${analystAssets.length} ASSETS` : 'PIN STORIES FROM FEED';
+}
+
+function renderAnalystBoard() {
+  const scroll = document.getElementById('am-asset-scroll');
+  const pinned = analystAssets.map(id => NEWS.find(s => s.id === id)).filter(Boolean);
+  if (!pinned.length) {
+    scroll.innerHTML = '<div class="am-asset-empty" id="am-asset-empty">DRAG STORIES FROM THE INTELLIGENCE FEED<br>OR CLICK THE PIN ICON ON ANY CARD</div>';
+    return;
+  }
+  scroll.innerHTML = pinned.map(s => `
+    <div class="am-card" style="--ac:${s.color}">
+      <div class="am-card-cat" style="color:${s.color}">${(CATS[s.cat]?.label||s.cat).toUpperCase()}${s.brk ? ' · <span style="color:var(--brk)">BREAKING</span>' : ''}</div>
+      <div class="am-card-title">${s.title}</div>
+      <div class="am-card-meta"><span>${s.src}</span><span>${s.time}</span><span>${s.region||''}</span></div>
+      <button class="am-card-rm" onclick="unpinStory(${s.id})">×</button>
+    </div>`).join('');
+}
+
+function resizeAnalystCanvas() {
+  const canvas = document.getElementById('am-canvas');
+  if (!canvas) return;
+  const parent = canvas.parentElement;
+  canvas.width = parent.offsetWidth;
+  canvas.height = parent.offsetHeight - 40;
+}
+
+function runAnalystGraph() {
+  if (analystAnimId) { cancelAnimationFrame(analystAnimId); analystAnimId = null; }
+  const canvas = document.getElementById('am-canvas');
+  const empty = document.getElementById('am-net-empty');
+  if (!canvas) return;
+
+  const pinned = analystAssets.map(id => NEWS.find(s => s.id === id)).filter(Boolean);
+  if (!pinned.length) { if (empty) empty.style.display = 'flex'; return; }
+  if (empty) empty.style.display = 'none';
+  document.getElementById('am-net-meta').textContent = `${pinned.length} NODES`;
+
+  const W = canvas.width, H = canvas.height;
+  const nodes = pinned.map((s, i) => ({
+    id: s.id, label: s.title.slice(0,20), color: s.color,
+    x: W/2 + (Math.random()-.5)*W*.6, y: H/2 + (Math.random()-.5)*H*.6,
+    vx:0, vy:0,
+  }));
+
+  // Edges from shared entities
+  const edges = [];
+  for (let i = 0; i < pinned.length; i++) {
+    for (let j = i+1; j < pinned.length; j++) {
+      const shared = SHARED_ENTITIES.filter(e =>
+        (pinned[i].title+' '+(pinned[i].summary||'')).toLowerCase().includes(e.toLowerCase()) &&
+        (pinned[j].title+' '+(pinned[j].summary||'')).toLowerCase().includes(e.toLowerCase())
+      );
+      if (shared.length) edges.push({ i, j, strength: shared.length, label: shared[0] });
+    }
+  }
+  document.getElementById('am-net-meta').textContent = `${pinned.length} NODES · ${edges.length} CONNECTIONS`;
+
+  const ctx = canvas.getContext('2d');
+  let frame = 0;
+
+  function loop() {
+    // Force simulation
+    for (const n of nodes) { n.vx *= 0.88; n.vy *= 0.88; n.vx += (W/2 - n.x) * 0.004; n.vy += (H/2 - n.y) * 0.004; }
+    for (let a = 0; a < nodes.length; a++) {
+      for (let b = a+1; b < nodes.length; b++) {
+        const dx = nodes[b].x - nodes[a].x, dy = nodes[b].y - nodes[a].y;
+        const d = Math.sqrt(dx*dx+dy*dy)+0.1;
+        const f = Math.min(4000/(d*d), 8);
+        nodes[a].vx -= dx/d*f; nodes[a].vy -= dy/d*f;
+        nodes[b].vx += dx/d*f; nodes[b].vy += dy/d*f;
+      }
+    }
+    for (const e of edges) {
+      const dx = nodes[e.j].x - nodes[e.i].x, dy = nodes[e.j].y - nodes[e.i].y;
+      const d = Math.sqrt(dx*dx+dy*dy)+0.1, target = 130;
+      const f = (d-target)*0.06;
+      nodes[e.i].vx += dx/d*f; nodes[e.i].vy += dy/d*f;
+      nodes[e.j].vx -= dx/d*f; nodes[e.j].vy -= dy/d*f;
+    }
+    for (const n of nodes) { n.x += n.vx; n.y += n.vy; n.x = Math.max(30,Math.min(W-30,n.x)); n.y = Math.max(30,Math.min(H-30,n.y)); }
+
+    // Draw
+    ctx.clearRect(0,0,W,H);
+    // Grid
+    ctx.strokeStyle = 'rgba(10,15,30,.8)';
+    ctx.lineWidth = .5;
+    for (let x = 0; x < W; x+=40) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+    for (let y = 0; y < H; y+=40) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+
+    // Edges
+    for (const e of edges) {
+      const s = 0.3 + Math.sin(frame*.02 + e.i)*0.1;
+      ctx.beginPath(); ctx.moveTo(nodes[e.i].x,nodes[e.i].y); ctx.lineTo(nodes[e.j].x,nodes[e.j].y);
+      ctx.strokeStyle = `rgba(0,212,255,${s})`; ctx.lineWidth = 0.5 + e.strength*0.3; ctx.stroke();
+      // Edge label
+      const mx = (nodes[e.i].x+nodes[e.j].x)/2, my = (nodes[e.i].y+nodes[e.j].y)/2;
+      ctx.font = '7px IBM Plex Mono'; ctx.fillStyle = 'rgba(0,150,180,.7)'; ctx.textAlign = 'center';
+      ctx.fillText(e.label.toUpperCase(), mx, my-5);
+    }
+
+    // Nodes
+    for (const n of nodes) {
+      const glow = ctx.createRadialGradient(n.x,n.y,0,n.x,n.y,20);
+      glow.addColorStop(0, n.color+'40'); glow.addColorStop(1,'transparent');
+      ctx.beginPath(); ctx.arc(n.x,n.y,20,0,Math.PI*2); ctx.fillStyle=glow; ctx.fill();
+      ctx.beginPath(); ctx.arc(n.x,n.y,8,0,Math.PI*2); ctx.fillStyle=n.color; ctx.fill();
+      ctx.strokeStyle='rgba(255,255,255,.2)'; ctx.lineWidth=1; ctx.stroke();
+      ctx.font='8px IBM Plex Mono'; ctx.fillStyle='rgba(150,170,210,.8)'; ctx.textAlign='center';
+      ctx.fillText(n.label+'…', n.x, n.y+20);
+    }
+
+    frame++;
+    analystAnimId = requestAnimationFrame(loop);
+  }
+  loop();
+}
+
+function synthesizeBrief() {
+  const pinned = analystAssets.map(id => NEWS.find(s => s.id === id)).filter(Boolean);
+  if (!pinned.length) return;
+
+  const briefEl = document.getElementById('am-brief-scroll');
+  const cats = [...new Set(pinned.map(s => s.cat))];
+  const regions = [...new Set(pinned.map(s => s.region).filter(Boolean))];
+  const entities = SHARED_ENTITIES.filter(e => pinned.some(s =>
+    (s.title+' '+(s.summary||'')).toLowerCase().includes(e.toLowerCase())
+  ));
+  const brkCount = pinned.filter(s => s.brk).length;
+  const now = new Date().toLocaleString([], {dateStyle:'medium',timeStyle:'short'});
+
+  briefEl.innerHTML = `
+    <div class="am-classify">TOP SECRET / NOFORN · ${now}</div>
+    <div class="am-brief-sec">
+      <div class="am-brief-sh">EXECUTIVE SUMMARY</div>
+      <p class="am-brief-p">Analysis of ${pinned.length} intelligence asset${pinned.length>1?'s':''} spanning ${cats.length} domain${cats.length>1?'s':''} and ${regions.length} operational region${regions.length>1?'s':''}. ${brkCount>0?`<strong style="color:#FF2D55">${brkCount} BREAKING</strong> development${brkCount>1?'s':''} flagged for immediate attention.`:''} Cross-domain analysis indicates ${entities.length > 4 ? 'elevated' : 'moderate'} global activity.</p>
+    </div>
+    <div class="am-brief-sec">
+      <div class="am-brief-sh">KEY ENTITIES</div>
+      <div class="am-entities">${entities.map(e => `<span class="am-ent hi">${e}</span>`).join('')}${regions.map(r => `<span class="am-ent">${r}</span>`).join('')}</div>
+    </div>
+    <div class="am-brief-sec">
+      <div class="am-brief-sh">ASSET SUMMARIES</div>
+      ${pinned.map(s => `<p class="am-brief-p" style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid #0a0c18"><span style="color:${s.color};font-family:var(--f-mono);font-size:7.5px;letter-spacing:.1em">${(CATS[s.cat]?.label||s.cat)} · ${s.src}</span><br>${s.summary||s.title}</p>`).join('')}
+    </div>
+    <div class="am-brief-sec">
+      <div class="am-brief-sh">DOMAINS</div>
+      <div class="am-entities">${cats.map(c=>`<span class="am-ent hi" style="border-color:${CATS[c]?.color}44;color:${CATS[c]?.color}">${CATS[c]?.label||c}</span>`).join('')}</div>
+    </div>`;
+  document.getElementById('am-brief-meta').textContent = `${pinned.length} ASSETS · ${now}`;
+}
+
+function exportBrief() {
+  const pinned = analystAssets.map(id => NEWS.find(s => s.id === id)).filter(Boolean);
+  if (!pinned.length) return;
+  const text = `MERIDIAN INTELLIGENCE BRIEF\n${'='.repeat(40)}\nGenerated: ${new Date().toLocaleString()}\n\n${pinned.map(s => `[${CATS[s.cat]?.label}] ${s.title}\n${s.src} · ${s.time}\n${s.summary||''}\n${s.url||''}\n`).join('\n')}`;
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([text], {type:'text/plain'}));
+  a.download = `meridian-brief-${Date.now()}.txt`;
+  a.click();
+}
 
 // ═══════════════════════════════════════════
 // BOOT SEQUENCE
@@ -1153,10 +1925,19 @@ try {
 }
 
 initTicker();
+initScrubber();
 renderFeed(NEWS);
+renderSentiment(NEWS);
+archiveCurrentStories();
+updateAllGlobeElements();
+applyMeaningfulArcs(NEWS);
 
-// Fetch live news after globe is ready
+// Fetch live news + supporting data after globe is ready
 setTimeout(() => fetchNews(), 800);
+setTimeout(() => fetchEarthquakes(), 2000);
+setTimeout(() => fetchMarketData(), 3000);
+// Re-fetch market data every 5 minutes
+setInterval(() => { if (marketVisible) fetchMarketData(); }, 5 * 60 * 1000);
 </script>
 </body>
 </html>
