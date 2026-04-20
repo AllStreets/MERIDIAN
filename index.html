@@ -1268,11 +1268,16 @@ function toggleSidebar() {
 // ═══════════════════════════════════════════
 // TICKER
 // ═══════════════════════════════════════════
+let _tkrHash = '';
 function initTicker() {
   const ordered = [...NEWS.filter(s => s.brk), ...NEWS.filter(s => !s.brk)];
+  // Skip re-render if content hasn't changed — prevents animation restart flicker
+  const hash = ordered.map(s => s.id).join(',');
+  if (hash === _tkrHash) return;
+  _tkrHash = hash;
+
   const items = [...ordered, ...ordered]; // duplicate for seamless loop
   const el = document.getElementById('tkr-inner');
-  // Stop animation before updating content to avoid flicker
   el.style.animation = 'none';
   el.innerHTML = items.map(s => `
     <span class="tkr-item" data-url="${s.url || ''}" onclick="if(this.dataset.url)window.open(this.dataset.url,'_blank')" title="${s.url ? 'Click to read full article' : ''}">
@@ -1280,10 +1285,9 @@ function initTicker() {
       <span class="tkr-src" style="color:${s.color}">${s.src.toUpperCase()}</span>
       ${s.title}
     </span>`).join('');
-  // Read width, force reflow to clear 'none', then start — no intermediate frames
   const halfW = el.scrollWidth / 2;
-  const dur = Math.round(halfW / 140);
-  void el.offsetWidth; // flush 'none' state
+  const dur = Math.round(halfW / 50); // 50px/s — same as market bar
+  void el.offsetWidth;
   el.style.animation = `tkr-scroll ${dur}s linear infinite`;
 }
 
@@ -1585,75 +1589,85 @@ const MARKET_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 const STOCK_WEIGHTS = {SPY:10,QQQ:9,AAPL:8,MSFT:8,NVDA:8,TSLA:7,AMZN:7,GOOGL:7,DIA:6,META:6};
 const STOCK_TICKERS = Object.keys(STOCK_WEIGHTS);
 
+// Fetch with a hard timeout so slow/hanging requests don't block
+function fetchWithTimeout(url, ms = 4000) {
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), ms);
+  return fetch(url, { signal: ctrl.signal }).finally(() => clearTimeout(t));
+}
+
 async function fetchMarketData() {
-  // Use cached data if fresh
   if (marketData.length > 0 && Date.now() - marketCacheTs < MARKET_CACHE_TTL) {
     renderMarketBar(); return;
   }
 
+  // ── Run all three sources in PARALLEL so a hanging stocks fetch
+  //    never delays crypto or FX ────────────────────────────────────
+  const bucket = { stocks: [], crypto: [], fx: [] };
 
+  await Promise.allSettled([
 
-  const items = [];
-
-  // ── 1. Equities via Yahoo Finance v8/chart (per-ticker, parallel) ──
-  // v8/chart on query2 avoids preflight CORS issues vs v7/quote on query1
-  try {
-    const fetchTicker = async (sym) => {
-      const r = await fetch(`https://query2.finance.yahoo.com/v8/finance/chart/${sym}?interval=1d&range=1d`);
-      if (!r.ok) return null;
-      const d = await r.json();
-      const meta = d?.chart?.result?.[0]?.meta;
-      if (!meta?.regularMarketPrice) return null;
-      const prev = meta.chartPreviousClose || meta.previousClose || meta.regularMarketPrice;
-      const chgPct = ((meta.regularMarketPrice - prev) / prev) * 100;
-      return {
-        sym,
-        price: formatPrice(meta.regularMarketPrice),
-        chg: chgPct,
-        _score: (STOCK_WEIGHTS[sym] || 5) * Math.abs(chgPct),
-        type: 'stock',
+    // 1. Equities — Yahoo Finance v8/chart, 3 s per ticker timeout
+    (async () => {
+      const fetchTicker = async (sym) => {
+        try {
+          const r = await fetchWithTimeout(
+            `https://query2.finance.yahoo.com/v8/finance/chart/${sym}?interval=1d&range=2d`, 3000
+          );
+          if (!r.ok) return null;
+          const d = await r.json();
+          const meta = d?.chart?.result?.[0]?.meta;
+          if (!meta?.regularMarketPrice) return null;
+          const prev = meta.chartPreviousClose || meta.previousClose || meta.regularMarketPrice;
+          const chg = ((meta.regularMarketPrice - prev) / prev) * 100;
+          return { sym, price: formatPrice(meta.regularMarketPrice), chg,
+                   _score: (STOCK_WEIGHTS[sym] || 5) * Math.abs(chg), type: 'stock' };
+        } catch { return null; }
       };
-    };
-    const results = await Promise.allSettled(STOCK_TICKERS.map(fetchTicker));
-    const scored = results
-      .filter(r => r.status === 'fulfilled' && r.value)
-      .map(r => r.value)
-      .sort((a, b) => b._score - a._score);
-    scored.slice(0, 3).forEach(s => items.push(s));
-  } catch(e) {}
+      const res = await Promise.allSettled(STOCK_TICKERS.map(fetchTicker));
+      bucket.stocks = res
+        .filter(r => r.status === 'fulfilled' && r.value)
+        .map(r => r.value)
+        .sort((a, b) => b._score - a._score)
+        .slice(0, 3);
+    })(),
 
-  // ── 2. Crypto via CoinGecko ────────────────────────────────────────
-  try {
-    const r = await fetch(
-      'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd&include_24hr_change=true'
-    );
-    if (r.ok) {
-      const d = await r.json();
-      if (d?.bitcoin?.usd)  items.push({ sym:'BTC', price: formatPrice(d.bitcoin.usd),  chg: d.bitcoin.usd_24h_change,  type:'crypto' });
-      if (d?.ethereum?.usd) items.push({ sym:'ETH', price: formatPrice(d.ethereum.usd), chg: d.ethereum.usd_24h_change, type:'crypto' });
-    }
-  } catch(e) {}
+    // 2. Crypto — CoinGecko
+    (async () => {
+      try {
+        const r = await fetchWithTimeout(
+          'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd&include_24hr_change=true'
+        );
+        if (!r.ok) return;
+        const d = await r.json();
+        if (d?.bitcoin?.usd)  bucket.crypto.push({ sym:'BTC', price: formatPrice(d.bitcoin.usd),  chg: d.bitcoin.usd_24h_change,  type:'crypto' });
+        if (d?.ethereum?.usd) bucket.crypto.push({ sym:'ETH', price: formatPrice(d.ethereum.usd), chg: d.ethereum.usd_24h_change, type:'crypto' });
+      } catch {}
+    })(),
 
-  // ── 3. Top 5 FX pairs vs USD via Frankfurter ──────────────────────
-  try {
-    const r = await fetch('https://api.frankfurter.app/latest?from=USD&to=EUR,GBP,JPY,CNY,CAD');
-    if (r.ok) {
-      const d = await r.json();
-      if (d?.rates) {
-        const fx = [
-          { sym:'EUR/USD', price: d.rates.EUR ? (1/d.rates.EUR).toFixed(4) : null },
-          { sym:'GBP/USD', price: d.rates.GBP ? (1/d.rates.GBP).toFixed(4) : null },
-          { sym:'USD/JPY', price: d.rates.JPY?.toFixed(2) ?? null },
-          { sym:'USD/CNY', price: d.rates.CNY?.toFixed(4) ?? null },
-          { sym:'USD/CAD', price: d.rates.CAD?.toFixed(4) ?? null },
-        ];
-        fx.forEach(p => { if (p.price) items.push({ sym: p.sym, price: p.price, chg: null, type:'fx' }); });
-      }
-    }
-  } catch(e) {}
+    // 3. FX — open.er-api.com (free, no key, reliable CORS)
+    (async () => {
+      try {
+        const r = await fetchWithTimeout('https://open.er-api.com/v6/latest/USD');
+        if (!r.ok) return;
+        const d = await r.json();
+        const rates = d?.rates;
+        if (!rates) return;
+        [
+          { sym:'EUR/USD', price: rates.EUR ? (1/rates.EUR).toFixed(4) : null },
+          { sym:'GBP/USD', price: rates.GBP ? (1/rates.GBP).toFixed(4) : null },
+          { sym:'USD/JPY', price: rates.JPY?.toFixed(2) ?? null },
+          { sym:'USD/CNY', price: rates.CNY?.toFixed(4) ?? null },
+          { sym:'USD/CAD', price: rates.CAD?.toFixed(4) ?? null },
+        ].forEach(p => { if (p.price) bucket.fx.push({ sym: p.sym, price: p.price, chg: null, type:'fx' }); });
+      } catch {}
+    })(),
 
-  if (items.length > 0) {
-    marketData = items;
+  ]);
+
+  const allItems = [...bucket.stocks, ...bucket.crypto, ...bucket.fx];
+  if (allItems.length > 0) {
+    marketData = allItems;
     marketCacheTs = Date.now();
   }
   renderMarketBar();
@@ -1664,6 +1678,7 @@ function formatPrice(n) {
   return n >= 1000 ? n.toLocaleString('en-US', {maximumFractionDigits:0}) : n.toFixed(2);
 }
 
+let _mktHash = '';
 function renderMarketBar() {
   const el = document.getElementById('mkt-inner');
   if (!el) return;
@@ -1671,8 +1686,14 @@ function renderMarketBar() {
   if (marketData.length === 0) {
     el.style.animation = 'none';
     el.innerHTML = '<span class="mkt-item" style="color:var(--t3);letter-spacing:.18em">LOADING MARKET DATA</span>';
+    _mktHash = '';
     return;
   }
+
+  // Skip re-render if data hasn't changed — prevents animation restart flicker
+  const hash = marketData.map(m => m.sym + m.price).join('|');
+  if (hash === _mktHash) return;
+  _mktHash = hash;
 
   // Build ordered list: stocks → crypto → FX, with sep dividers
   const items = [];
