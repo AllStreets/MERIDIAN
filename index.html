@@ -528,6 +528,50 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 /* ── B1 THREAT RING GLOW ─────────────── */
 .tr-hotspot{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;border-radius:50%;animation:tr-pulse 3s ease-in-out infinite}
 @keyframes tr-pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,255,255,.0)}50%{box-shadow:0 0 20px 4px rgba(255,255,255,.12)}}
+
+/* ── COMMAND PANEL ───────────────────── */
+#cmd-panel{position:fixed;left:18px;top:calc(var(--hdr-h) + var(--tkr-h) + 12px);z-index:100;display:flex;flex-direction:column;gap:5px}
+.cmd-btn{height:28px;padding:0 10px;background:rgba(6,8,20,.88);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.07);border-radius:2px;font-family:var(--f-mono);font-size:8px;letter-spacing:.14em;color:var(--t3);cursor:pointer;transition:all .18s;white-space:nowrap;display:flex;align-items:center;gap:7px;width:122px}
+.cmd-btn:hover{border-color:rgba(255,255,255,.16);color:var(--t2);background:rgba(255,255,255,.04)}
+.cmd-btn.on{border-color:color-mix(in srgb,var(--lc,#1A7FA8) 50%,transparent);color:var(--lc,#1A7FA8);background:color-mix(in srgb,var(--lc,#1A7FA8) 8%,transparent)}
+.cmd-ico{width:12px;height:12px;flex-shrink:0;opacity:.7}
+
+/* ── DAILY BRIEF MODAL ───────────────── */
+#brief-bd{position:fixed;inset:0;z-index:700;background:rgba(0,0,0,.6);backdrop-filter:blur(5px);opacity:0;pointer-events:none;transition:opacity .25s}
+#brief-bd.on{opacity:1;pointer-events:all}
+#brief-modal{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(.95);width:min(700px,90vw);max-height:84vh;z-index:701;background:rgba(6,9,22,.97);border:1px solid rgba(255,255,255,.1);border-radius:5px;display:flex;flex-direction:column;opacity:0;pointer-events:none;transition:all .28s cubic-bezier(.34,1.2,.64,1)}
+#brief-modal.on{opacity:1;pointer-events:all;transform:translate(-50%,-50%) scale(1)}
+.bm-hdr{padding:20px 24px 15px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:flex-start;gap:16px;flex-shrink:0}
+.bm-title-block{flex:1}
+.bm-eyebrow{font-family:var(--f-mono);font-size:7.5px;letter-spacing:.24em;color:var(--t3);margin-bottom:5px}
+.bm-title{font-family:var(--f-brand);font-size:17px;font-weight:800;letter-spacing:.1em;color:var(--t1)}
+.bm-date{font-family:var(--f-mono);font-size:8.5px;color:var(--t3);margin-top:5px;letter-spacing:.1em}
+.bm-close{width:28px;height:28px;border:1px solid rgba(255,255,255,.09);background:none;color:var(--t3);cursor:pointer;border-radius:2px;font-size:18px;display:flex;align-items:center;justify-content:center;transition:all .15s;font-family:monospace;flex-shrink:0}
+.bm-close:hover{border-color:rgba(255,255,255,.25);color:var(--t1)}
+.bm-body{flex:1;overflow-y:auto;padding:20px 24px;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.06) transparent;font-family:var(--f-ui);font-size:13.5px;line-height:1.72;color:#BCC5E8}
+.bm-body p{margin-bottom:14px}
+.bm-body h3{font-family:var(--f-mono);font-size:8.5px;letter-spacing:.22em;color:var(--t3);margin:22px 0 8px;padding-bottom:5px;border-bottom:1px solid rgba(255,255,255,.05);text-transform:uppercase}
+.bm-loading{font-family:var(--f-mono);font-size:10px;letter-spacing:.16em;color:var(--t3);text-align:center;padding:48px 0;animation:blink-fade 1.4s ease-in-out infinite}
+@keyframes blink-fade{0%,100%{opacity:.25}50%{opacity:1}}
+.bm-error{color:var(--geo);font-family:var(--f-mono);font-size:10px;letter-spacing:.1em}
+.bm-footer{padding:13px 24px;border-top:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.bm-meta{font-family:var(--f-mono);font-size:8px;color:var(--t3);letter-spacing:.1em}
+.bm-export-btn{padding:7px 14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:2px;font-family:var(--f-mono);font-size:8.5px;letter-spacing:.12em;color:var(--t2);cursor:pointer;transition:all .18s}
+.bm-export-btn:hover{border-color:rgba(255,255,255,.22);color:var(--t1);background:rgba(255,255,255,.07)}
+
+/* ── MAP KEY DROPDOWN ────────────────── */
+#mapkey-drop{position:fixed;left:18px;top:calc(var(--hdr-h) + var(--tkr-h) + 12px + 99px);z-index:200;width:228px;background:rgba(4,6,18,.98);backdrop-filter:blur(26px);border:1px solid rgba(255,255,255,.08);border-radius:4px;overflow:hidden;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;transform:translateY(-6px);max-height:58vh;display:flex;flex-direction:column}
+#mapkey-drop.on{opacity:1;pointer-events:all;transform:translateY(0)}
+.mk-hdr-lbl{padding:9px 14px 7px;border-bottom:1px solid rgba(255,255,255,.05);font-family:var(--f-mono);font-size:7px;letter-spacing:.22em;color:var(--t3);flex-shrink:0}
+.mk-list{overflow-y:auto;flex:1;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.05) transparent}
+.mk-section{padding:8px 14px 3px;font-family:var(--f-mono);font-size:6.5px;letter-spacing:.22em;color:var(--t3);opacity:.55}
+.mk-row{display:flex;align-items:center;gap:10px;padding:6px 14px;transition:background .12s}
+.mk-row:hover{background:rgba(255,255,255,.03)}
+.mk-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.mk-dash{width:18px;height:2px;border-radius:1px;flex-shrink:0}
+.mk-lbl{font-family:var(--f-ui);font-size:10px;color:var(--t2);flex:1;line-height:1.3}
+.mk-collapse-btn{padding:8px 14px;border-top:1px solid rgba(255,255,255,.05);font-family:var(--f-mono);font-size:7.5px;letter-spacing:.14em;color:var(--t3);cursor:pointer;text-align:center;background:none;border-left:none;border-right:none;border-bottom:none;width:100%;transition:all .15s}
+.mk-collapse-btn:hover{color:var(--t2);background:rgba(255,255,255,.03)}
 </style>
 </head>
 <body>
@@ -567,7 +611,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
     <button class="lc-btn" id="lc-threats"  style="--lc:#B7950B" onclick="toggleThreats()"   title="Orbital threat rings"><span class="lc-pip"></span>THREATS</button>
     <button class="lc-btn" id="lc-fog"      style="--lc:#3D6B1C" onclick="toggleFog()"       title="Atmospheric data fog"><span class="lc-pip"></span>FOG</button>
     <button class="lc-btn" id="lc-sanctions"style="--lc:#873600" onclick="toggleSanctions()" title="Sanctions mesh"><span class="lc-pip"></span>SANCTIONS</button>
-    <button class="lc-btn" id="lc-am"       style="--lc:#1A7FA8" onclick="openAnalystMode()" title="Analyst mode"><span class="lc-pip"></span>ANALYST</button>
   </div>
   <div class="hdr-sep"></div>
   <div class="hdr-stat"><span class="hs-v" id="story-count">20</span><span class="hs-l">Stories</span></div>
@@ -583,6 +626,47 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
     <input id="srch" placeholder="Search stories, regions..." oninput="handleSearch(this.value)">
   </div>
 </header>
+
+<!-- COMMAND PANEL -->
+<div id="cmd-panel">
+  <button class="cmd-btn" style="--lc:#1A7FA8" onclick="openAnalystMode()">
+    <svg class="cmd-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+    ANALYST
+  </button>
+  <button class="cmd-btn" id="cmd-brief-btn" style="--lc:#4A8CA8" onclick="openDailyBrief()">
+    <svg class="cmd-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+    BRIEF
+  </button>
+  <button class="cmd-btn" id="cmd-mapkey-btn" onclick="toggleMapKey()">
+    <svg class="cmd-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+    MAP KEY
+  </button>
+</div>
+
+<!-- MAP KEY DROPDOWN -->
+<div id="mapkey-drop">
+  <div class="mk-hdr-lbl">MAP LEGEND</div>
+  <div class="mk-list" id="mk-list"></div>
+  <button class="mk-collapse-btn" onclick="toggleMapKey()">▲ COLLAPSE</button>
+</div>
+
+<!-- DAILY BRIEF MODAL -->
+<div id="brief-bd" onclick="closeDailyBrief()"></div>
+<div id="brief-modal">
+  <div class="bm-hdr">
+    <div class="bm-title-block">
+      <div class="bm-eyebrow">MERIDIAN INTELLIGENCE NETWORK</div>
+      <div class="bm-title">DAILY SITUATION REPORT</div>
+      <div class="bm-date" id="bm-date"></div>
+    </div>
+    <button class="bm-close" onclick="closeDailyBrief()">×</button>
+  </div>
+  <div class="bm-body" id="bm-body"><div class="bm-loading">ASSEMBLING BRIEF…</div></div>
+  <div class="bm-footer">
+    <span class="bm-meta" id="bm-meta"></span>
+    <button class="bm-export-btn" onclick="exportDailyBrief()">EXPORT HTML</button>
+  </div>
+</div>
 
 <!-- CATEGORY RAIL -->
 <nav id="cat-rail">
@@ -2466,7 +2550,7 @@ async function callOpenAI(sys, user, maxTokens = 420) {
     const res = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST', signal: ctrl.signal,
       headers: { 'Content-Type':'application/json', 'Authorization':`Bearer ${OPENAI_KEY}` },
-      body: JSON.stringify({ model:'gpt-5.4-mini', max_tokens:maxTokens, temperature:0.7,
+      body: JSON.stringify({ model:'gpt-5.4-mini', max_completion_tokens:maxTokens, temperature:0.7,
         messages:[{role:'system',content:sys},{role:'user',content:user}] }),
     });
     clearTimeout(t);
@@ -2750,7 +2834,6 @@ let wargameArcs   = [];
 function openWargame() {
   wargameActive = true;
   document.getElementById('wargame-overlay').classList.add('on');
-  document.getElementById('lc-am').classList.remove('on');
   // Allow globe markers to trigger wargame — show picker if multiple stories at location
   if (G) {
     G.onPointClick(item => {
@@ -2763,25 +2846,113 @@ function openWargame() {
 }
 
 function openWargamePicker(stories) {
-  // Reuse picker panel UI but each item runs wargame instead of opening article
-  const panel = document.getElementById('picker-panel');
-  if (!panel) return;
-  document.getElementById('picker-title').textContent = `${stories.length} STORIES · SELECT TARGET FOR WARGAME`;
-  const list = document.getElementById('picker-list');
-  list.innerHTML = stories.map((s, i) => `
-    <div class="picker-item" data-i="${i}" style="--nc:${s.color}">
-      <div class="pi-cat">${(window.CATS&&CATS[s.cat])?CATS[s.cat].label:s.cat.toUpperCase()}</div>
-      <div class="pi-title">${s.title||'Untitled'}</div>
-      <div class="pi-meta">${s.src||''} · ${s.time||''}</div>
-      <div class="pi-action" style="font-size:9px;letter-spacing:.15em;color:#FF9F0A;margin-top:4px;font-family:var(--f-mono)">⚔ RUN WARGAME</div>
+  G.controls().autoRotate = false;
+  G.pointOfView({ lat: stories[0].lat, lng: stories[0].lng, altitude: 1.55 }, 900);
+  document.getElementById('pk-loc').textContent = (stories[0].region || 'LOCATION').toUpperCase();
+  document.getElementById('pk-count').textContent = `${stories.length} STORIES · SELECT WARGAME TARGET`;
+  document.getElementById('pk-list').innerHTML = stories.map(s => `
+    <div class="pk-item" data-id="${s.id}">
+      <div class="pk-accent" style="background:${s.color}"></div>
+      <div class="pk-info">
+        <div class="pk-cat" style="color:${s.color}">${CATS[s.cat]?.label||s.cat.toUpperCase()}${s.brk?` · <span style="color:var(--brk)">BREAKING</span>`:''}</div>
+        <div class="pk-title">${s.title}</div>
+        <div class="pk-src">${s.src} · ${s.time}</div>
+        <div style="margin-top:5px;font-family:var(--f-mono);font-size:8px;letter-spacing:.14em;color:#FF9F0A">⚔ RUN WARGAME</div>
+      </div>
+      <span class="pk-arrow">›</span>
     </div>`).join('');
-  list.querySelectorAll('.picker-item').forEach((el, i) => {
-    el.addEventListener('click', () => {
-      closePicker();
-      generateWargameScenarios(stories[i]);
-    });
+  document.getElementById('pk-list').querySelectorAll('.pk-item').forEach(el => {
+    const s = NEWS.find(n => n.id === +el.dataset.id);
+    el.addEventListener('click', () => { closePicker(); generateWargameScenarios(s); });
   });
-  panel.classList.add('on');
+  document.getElementById('art-bd').classList.add('on');
+  document.getElementById('picker').classList.add('on');
+}
+
+// ── DAILY BRIEF ───────────────────────────────
+let _briefContent = '';
+async function openDailyBrief() {
+  const now = new Date();
+  document.getElementById('bm-date').textContent = now.toUTCString().toUpperCase().replace('GMT','UTC');
+  document.getElementById('bm-body').innerHTML = '<div class="bm-loading">ASSEMBLING BRIEF…</div>';
+  document.getElementById('bm-meta').textContent = '';
+  _briefContent = '';
+  document.getElementById('brief-bd').classList.add('on');
+  document.getElementById('brief-modal').classList.add('on');
+
+  const top = NEWS.slice(0, 14);
+  const sys = `You are a senior intelligence analyst writing a daily situation report. Write in clear, authoritative analytical prose. Format with HTML: use <h3> for exactly three section headers (EXECUTIVE SUMMARY, KEY DEVELOPMENTS, STRATEGIC IMPLICATIONS), use <p> for paragraphs. Do not use classification markings, "TOP SECRET", or document stamps. Be direct and substantive.`;
+  const user = `Today is ${now.toDateString()}. Write a daily situation report covering the most significant geopolitical, military, economic, and technology developments based on these current stories:\n\n${top.map(s=>`[${s.cat.toUpperCase()}] ${s.title} (${s.src})${s.summary?' — '+s.summary:''}`).join('\n')}`;
+
+  try {
+    const brief = await callOpenAI(sys, user, 1000);
+    _briefContent = brief;
+    document.getElementById('bm-body').innerHTML = brief;
+    document.getElementById('bm-meta').textContent = `${top.length} SOURCES · GENERATED ${now.toLocaleTimeString()}`;
+  } catch(e) {
+    document.getElementById('bm-body').innerHTML = `<p class="bm-error">ERROR: ${e.message}</p>`;
+  }
+}
+
+function closeDailyBrief() {
+  document.getElementById('brief-bd').classList.remove('on');
+  document.getElementById('brief-modal').classList.remove('on');
+}
+
+function exportDailyBrief() {
+  const body = document.getElementById('bm-body').innerHTML;
+  const date = new Date().toDateString();
+  const html = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Meridian Daily Brief — ${date}</title><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Georgia,'Times New Roman',serif;max-width:740px;margin:60px auto;padding:0 28px;background:#fafaf8;color:#1c1c2e;line-height:1.75}.masthead{border-bottom:2px solid #1c1c2e;padding-bottom:14px;margin-bottom:28px}.org{font-family:'Courier New',monospace;font-size:10px;letter-spacing:.2em;color:#666;margin-bottom:6px;text-transform:uppercase}h1{font-size:22px;font-weight:normal;letter-spacing:.04em;margin-bottom:4px}.dateline{font-family:'Courier New',monospace;font-size:10px;color:#888;letter-spacing:.1em}h3{font-family:'Courier New',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#555;margin:28px 0 10px;padding-bottom:5px;border-bottom:1px solid #e0e0d8}p{margin-bottom:15px;font-size:14.5px}.footer{margin-top:40px;padding-top:12px;border-top:1px solid #e0e0d8;font-family:'Courier New',monospace;font-size:9px;color:#aaa;letter-spacing:.1em}</style></head><body><div class="masthead"><div class="org">Meridian Intelligence Network</div><h1>Daily Situation Report</h1><div class="dateline">${date}</div></div>${body}<div class="footer">Generated by MERIDIAN · ${date}</div></body></html>`;
+  const a = document.createElement('a');
+  a.href = 'data:text/html;charset=utf-8,' + encodeURIComponent(html);
+  a.download = `meridian-brief-${new Date().toISOString().slice(0,10)}.html`;
+  a.click();
+}
+
+// ── MAP KEY ───────────────────────────────────
+let _mapKeyOpen = false;
+function toggleMapKey() {
+  _mapKeyOpen = !_mapKeyOpen;
+  if (_mapKeyOpen) buildMapKey();
+  document.getElementById('mapkey-drop').classList.toggle('on', _mapKeyOpen);
+  document.getElementById('cmd-mapkey-btn').classList.toggle('on', _mapKeyOpen);
+}
+
+function buildMapKey() {
+  const rows = [
+    { s:'STORY MARKERS' },
+    { dot:'var(--geo)', lbl:'Geopolitical event' },
+    { dot:'var(--mil)', lbl:'Military / conflict' },
+    { dot:'var(--fin)', lbl:'Finance / economics' },
+    { dot:'var(--cli)', lbl:'Climate / environment' },
+    { dot:'var(--tec)', lbl:'Technology' },
+    { s:'ANIMATED EFFECTS' },
+    { dot:'var(--brk)', lbl:'Breaking news pulse (< 25 min)' },
+    { dash:'rgba(255,255,255,.35)', lbl:'Story arc connection' },
+    { dash:'var(--tec)', lbl:'Cascade predictor arc' },
+    { s:'TOGGLE OVERLAYS' },
+    { dot:'#C0392B', lbl:'QUAKES — Seismic events' },
+    { dot:'#D35400', lbl:'HEAT — Story density heatmap' },
+    { dot:'#1E7A46', lbl:'MARKET — Live market ticker' },
+    { dot:'#1A5276', lbl:'FLIGHTS — Aircraft (green=normal, red=anomaly)' },
+    { dot:'#4527A0', lbl:'CABLES — Subsea infrastructure' },
+    { dot:'#0E6655', lbl:'SHIPPING — Chokepoint flow monitor' },
+    { dot:'#6C3483', lbl:'DIVERGE — Narrative fracture lines' },
+    { dot:'#922B51', lbl:'CASCADE — Crisis pattern prediction arc' },
+    { dot:'#566573', lbl:'SILENCE — Information blackout void' },
+    { dot:'#B7950B', lbl:'THREATS — Orbital risk rings' },
+    { dot:'#3D6B1C', lbl:'FOG — Data uncertainty cloud' },
+    { dot:'#873600', lbl:'SANCTIONS — Sanctioned entity nodes' },
+    { s:'GLOBE' },
+    { dot:'#FFD395', lbl:'Day mode — NASA Blue Marble' },
+    { dot:'#1A3A6B', lbl:'Night mode — City nightlights' },
+  ];
+  document.getElementById('mk-list').innerHTML = rows.map(r => {
+    if (r.s) return `<div class="mk-section">${r.s}</div>`;
+    if (r.dot) return `<div class="mk-row"><div class="mk-dot" style="background:${r.dot}"></div><span class="mk-lbl">${r.lbl}</span></div>`;
+    if (r.dash) return `<div class="mk-row"><div class="mk-dash" style="background:${r.dash}"></div><span class="mk-lbl">${r.lbl}</span></div>`;
+    return '';
+  }).join('');
 }
 
 function openWargameFromAnalyst() {
