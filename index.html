@@ -2466,7 +2466,7 @@ async function callOpenAI(sys, user, maxTokens = 420) {
     const res = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST', signal: ctrl.signal,
       headers: { 'Content-Type':'application/json', 'Authorization':`Bearer ${OPENAI_KEY}` },
-      body: JSON.stringify({ model:'gpt-4o-mini', max_tokens:maxTokens, temperature:0.7,
+      body: JSON.stringify({ model:'gpt-4.1-mini', max_tokens:maxTokens, temperature:0.7,
         messages:[{role:'system',content:sys},{role:'user',content:user}] }),
     });
     clearTimeout(t);
@@ -2751,13 +2751,37 @@ function openWargame() {
   wargameActive = true;
   document.getElementById('wargame-overlay').classList.add('on');
   document.getElementById('lc-am').classList.remove('on');
-  // Allow globe markers to trigger wargame scenario generation
+  // Allow globe markers to trigger wargame — show picker if multiple stories at location
   if (G) {
     G.onPointClick(item => {
-      if (item && !item._type) generateWargameScenarios(item);
-      else if (item && item._type === 'story') generateWargameScenarios(item);
+      if (!item || (item._type && item._type !== 'story')) return;
+      const nearby = NEWS.filter(s => Math.abs(s.lat - item.lat) < 0.5 && Math.abs(s.lng - item.lng) < 0.5);
+      if (nearby.length <= 1) generateWargameScenarios(nearby[0] || item);
+      else openWargamePicker(nearby);
     });
   }
+}
+
+function openWargamePicker(stories) {
+  // Reuse picker panel UI but each item runs wargame instead of opening article
+  const panel = document.getElementById('picker-panel');
+  if (!panel) return;
+  document.getElementById('picker-title').textContent = `${stories.length} STORIES · SELECT TARGET FOR WARGAME`;
+  const list = document.getElementById('picker-list');
+  list.innerHTML = stories.map((s, i) => `
+    <div class="picker-item" data-i="${i}" style="--nc:${s.color}">
+      <div class="pi-cat">${(window.CATS&&CATS[s.cat])?CATS[s.cat].label:s.cat.toUpperCase()}</div>
+      <div class="pi-title">${s.title||'Untitled'}</div>
+      <div class="pi-meta">${s.src||''} · ${s.time||''}</div>
+      <div class="pi-action" style="font-size:9px;letter-spacing:.15em;color:#FF9F0A;margin-top:4px;font-family:var(--f-mono)">⚔ RUN WARGAME</div>
+    </div>`).join('');
+  list.querySelectorAll('.picker-item').forEach((el, i) => {
+    el.addEventListener('click', () => {
+      closePicker();
+      generateWargameScenarios(stories[i]);
+    });
+  });
+  panel.classList.add('on');
 }
 
 function openWargameFromAnalyst() {
@@ -3422,17 +3446,34 @@ function initShippingData() {
   } catch { simulateShipping(); }
 }
 
+// Baseline geopolitical disruption (0=normal, 1=fully closed) — updated Apr 2025
+const CP_BASELINE = {
+  'Strait of Hormuz':  0.62, // Iran-US-Israel tensions; tanker seizures ongoing
+  'Bab-el-Mandeb':     0.74, // Houthi attacks on Red Sea shipping — near-blockade
+  'Suez Canal':        0.48, // ~70% traffic diverted via Cape of Good Hope
+  'Panama Canal':      0.28, // Water level restrictions + US-Panama friction
+  'Malacca Strait':    0.06,
+  'Bosphorus':         0.14, // Montreux Convention warship restrictions
+  'Cape of Good Hope': 0.00, // Traffic surge from Red Sea diversion — over-capacity
+  'Cape Horn':         0.04,
+};
+
 function simulateShipping() {
-  // Derive traffic from news — conflict coverage → reduced flow
+  // Combine baseline geopolitical disruption with real-time news signal
   for (const cp of CHOKEPOINTS) {
     const cpText = cp.name.toLowerCase().replace(/ /g,'');
     const redSea = ['Bab-el-Mandeb','Suez Canal'].includes(cp.name);
+    const goodHope = cp.name === 'Cape of Good Hope';
     const related = NEWS.filter(s => {
       const t = (s.title+' '+(s.summary||'')).toLowerCase();
       return t.includes(cpText.slice(0,6)) || (redSea && (t.includes('red sea')||t.includes('houthi')||t.includes('yemen')));
     });
-    const disruption = Math.min(0.7, related.length * 0.18);
-    _vesselCounts[cp.name] = Math.round(cp.cap * (1-disruption) * (0.82+Math.random()*0.32));
+    const newsDisruption = Math.min(0.25, related.length * 0.08);
+    const baseline = CP_BASELINE[cp.name] || 0;
+    // Cape of Good Hope gets extra traffic from Red Sea diversion
+    const goodHopeBonus = goodHope ? Math.min(0.35, (_vesselCounts['Bab-el-Mandeb']||0) < cp.cap*0.4 ? 0.35 : 0.15) : 0;
+    const totalDisruption = Math.min(0.88, baseline + newsDisruption - goodHopeBonus);
+    _vesselCounts[cp.name] = Math.round(cp.cap * (1-totalDisruption) * (0.88+Math.random()*0.18));
   }
   renderShippingPanel();
 }
