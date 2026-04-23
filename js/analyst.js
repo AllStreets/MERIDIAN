@@ -532,7 +532,8 @@ ${pinned.length ? `<div class="section"><div class="sec-label">INTELLIGENCE ASSE
 async function callOpenAI(sys, user, maxTokens = 420) {
   if (!OPENAI_KEY || OPENAI_KEY.includes('YOUR_OPENAI')) throw new Error('API_KEY_MISSING');
   const ctrl = new AbortController();
-  const t = setTimeout(() => ctrl.abort(), 22000);
+  const timeoutMs = maxTokens > 800 ? 55000 : 30000;
+  const t = setTimeout(() => ctrl.abort(), timeoutMs);
   try {
     const res = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST', signal: ctrl.signal,
@@ -714,7 +715,7 @@ async function runConsensusBoard() {
     synthesis = await callOpenAI(
       `You are the Senior Intelligence Analyst synthesizing a panel of 5 specialist analysts who reviewed the same situation independently and then cross-examined each other. Write a consolidated brief in IC style — direct, unhedged, actionable. 3-4 short paragraphs.`,
       `INTELLIGENCE ASSETS REVIEWED:\n${context}\n\nSPECIALIST ASSESSMENTS:\n${analystSummaries}\n\nCROSS-EXAMINATION:\n${hawk.name} challenged: "${hawkChallenge}"\n${dove.name} rebutted: "${doveRebuttal}"\n\nWrite the consolidated brief covering: (1) key findings where analysts agree, (2) the most significant divergence and what it means for decision-makers, (3) the single highest-priority action indicator to watch, (4) overall threat trajectory.`,
-      400
+      700
     );
   } catch(e) { synthesis = 'Synthesis unavailable — check API key.'; }
 
@@ -751,7 +752,7 @@ async function generateRedTeamBrief() {
     const brief = await callOpenAI(
       'You are generating an adversarial intelligence assessment from a rival state actor perspective, analyzing Western/US vulnerabilities and opportunities. Use intelligence community style writing. Be credible and specific.',
       `Generate a structured intelligence assessment from an adversarial perspective for these developments:\n\n${context}\n\nFormat your response with these labeled sections (write 3-5 specific points under each section):\nSITUATION ASSESSMENT:\nIDENTIFIED VULNERABILITIES:\nEXPLOITATION VECTORS:\nSTRATEGIC OPPORTUNITY WINDOW:\nCOUNTERMEASURE GAPS:\nRECOMMENDED ACTIONS:`,
-      1800
+      2200
     );
 
     window._rtBriefText = brief;
@@ -859,7 +860,7 @@ async function openDailyBrief() {
   const user = `Today is ${now.toDateString()}. Write a daily situation report covering the most significant geopolitical, military, economic, and technology developments based on these current stories:\n\n${top.map(s=>`[${s.cat.toUpperCase()}] ${s.title} (${s.src})${s.summary?' — '+s.summary:''}`).join('\n')}`;
 
   try {
-    const brief = await callOpenAI(sys, user, 1000);
+    const brief = await callOpenAI(sys, user, 2500);
     _briefContent = brief;
     document.getElementById('bm-body').innerHTML = brief;
     document.getElementById('bm-meta').textContent = `${top.length} SOURCES · GENERATED ${now.toLocaleTimeString()}`;
@@ -1001,7 +1002,7 @@ async function generateWargameScenarios(story) {
     const text = await callOpenAI(
       'You are a strategic scenario planner at an intelligence agency. Generate exactly 3 plausible 72-hour scenarios. Respond ONLY in valid JSON.',
       `Story: ${story.title}\nSummary: ${story.summary||''}\nRegion: ${story.region||'Unknown'}\n\nRespond with ONLY this JSON (no markdown):\n{"scenarios":[{"title":"...","probability":35,"path":"escalation","hours":48,"description":"2 sentences describing what happens.","dstLat":0.0,"dstLng":0.0,"indicators":["Watch indicator 1","Watch indicator 2"]},{"title":"...","probability":40,"path":"de-escalation","hours":72,"description":"...","dstLat":0.0,"dstLng":0.0,"indicators":["...","..."]},{"title":"...","probability":25,"path":"lateral","hours":24,"description":"...","dstLat":0.0,"dstLng":0.0,"indicators":["...","..."]}]}`,
-      520
+      650
     );
 
     const json = JSON.parse(text.match(/\{[\s\S]*\}/)?.[0] || '{}');
@@ -1178,7 +1179,7 @@ async function generatePlaybook() {
   const user = `Generate an ADVERSARY PLAYBOOK for these pinned intelligence assets.\n\nACTORS: ${actors.length ? actors.join(', ') : 'Unknown'}\n\nCURRENT INTELLIGENCE:\n${context}\n\nSections:\nBEHAVIORAL PATTERNS:\nSTRATEGIC INTERESTS:\nPREDICTED MOVES (30/60/90 DAY):\nPRESSURE POINTS:\nCOUNTER-STRATEGY:\nRED FLAGS:`;
 
   try {
-    const brief = await callOpenAI(sys, user, 700);
+    const brief = await callOpenAI(sys, user, 1600);
     window._pbBriefText = brief;
     document.getElementById('pb-export-btn').style.display = '';
     pbStatus.textContent = 'PLAYBOOK GENERATED';
