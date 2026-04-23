@@ -286,10 +286,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 .lc-btn{height:26px;padding:0 9px;border:1px solid var(--b1);background:none;border-radius:2px;font-family:var(--f-mono);font-size:8px;letter-spacing:.1em;color:var(--t3);cursor:pointer;transition:all .18s;white-space:nowrap;display:flex;align-items:center;flex-shrink:0}
 .lc-btn:hover{border-color:var(--b2);color:var(--t2)}
 .lc-btn.on{border-color:rgba(0,212,255,.4);color:#00D4FF;background:rgba(0,212,255,.07)}
-/* WARGAME nav button — distinct steel blue */
-.lc-wargame{color:rgba(84,130,178,.75);border-color:rgba(84,130,178,.3)}
-.lc-wargame:hover{border-color:#5482B2;color:#7BAAD4;background:rgba(84,130,178,.07)}
-.lc-wargame.on{border-color:rgba(84,130,178,.6);color:#7BAAD4;background:rgba(84,130,178,.1)}
+/* WARGAME — inherits default .lc-btn styling */
 /* Search icon + input */
 .lc-search-icon{height:26px;width:26px;border:1px solid var(--b1);background:none;border-radius:2px;color:var(--t3);cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .18s;padding:0}
 .lc-search-icon:hover{border-color:var(--b2);color:var(--t2)}
@@ -716,6 +713,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 @keyframes mk-ring-out{0%{transform:translate(-50%,-50%) scale(.3);opacity:.85}100%{transform:translate(-50%,-50%) scale(1);opacity:0}}
 .mk-ico-lbl{width:18px;font-size:10px;text-align:center;flex-shrink:0;line-height:1}
 .mk-city-ico{width:14px;height:14px;flex-shrink:0}
+.mk-plane-ico{width:16px;height:16px;flex-shrink:0;display:flex;align-items:center;justify-content:center}.mk-plane-ico svg{width:16px;height:16px}
 .mk-lbl{font-family:var(--f-ui);font-size:10px;color:var(--t2);flex:1;line-height:1.3}
 .mk-collapse-btn{padding:8px 14px;border-top:1px solid rgba(255,255,255,.05);font-family:var(--f-mono);font-size:7.5px;letter-spacing:.14em;color:var(--t3);cursor:pointer;text-align:center;background:none;border-left:none;border-right:none;border-bottom:none;width:100%;transition:all .15s}
 .mk-collapse-btn:hover{color:var(--t2);background:rgba(255,255,255,.03)}

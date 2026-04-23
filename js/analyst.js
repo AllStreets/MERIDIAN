@@ -931,17 +931,10 @@ function buildMapKey() {
     { ring:'#FF2D55', lbl:'CRITICAL — expanding pulse rings, radius scaled to zone size' },
     { ring:'#FF9F0A', lbl:'HIGH — expanding pulse rings, radius scaled to zone size' },
     { ring:'#B7950B', lbl:'ELEVATED — expanding pulse rings, radius scaled to zone size' },
-    { s:'DATA OVERLAYS' },
-    { dot:'#ECEFF1', lbl:'QUAKES — Seismic event marker' },
-    { dot:'#0A84FF', lbl:'FLIGHTS — Passenger aircraft' },
-    { dot:'#A78BFA', lbl:'FLIGHTS — Cargo freighter' },
-    { dot:'#30D158', lbl:'FLIGHTS — Military / surveillance' },
-    { dot:'#4527A0', lbl:'CABLES — Subsea cable network' },
-    { dot:'#0E6655', lbl:'SHIPPING — Chokepoint vessel flow' },
-    { dot:'#2979FF', lbl:'SANCTIONS — Sanctioned entity hits' },
-    { s:'GLOBE TEXTURE' },
-    { dot:'#FFD395', lbl:'Day mode — NASA Blue Marble' },
-    { dot:'#1A3A6B', lbl:'Night mode — City nightlights' },
+    { s:'FLIGHT ICONS' },
+    { plane:'#0A84FF', lbl:'Passenger aircraft' },
+    { plane:'#A78BFA', lbl:'Cargo freighter' },
+    { plane:'#30D158', lbl:'Military / surveillance' },
     { s:'ANALYST TOOLS' },
     { dash:'rgba(0,212,255,.7)',  lbl:'Entity network edge — same-domain connection' },
     { dash:'rgba(255,159,10,.7)', lbl:'Entity network edge — cross-domain signal correlation' },
@@ -961,6 +954,7 @@ function buildMapKey() {
     if (r.dash)     return `<div class="mk-row"><div class="mk-dash" style="background:${r.dash}"></div><span class="mk-lbl">${r.lbl}</span></div>`;
     if (r.shape)    return `<div class="mk-row"><div class="mk-dot" style="background:${r.color};clip-path:${shapeClip[r.shape]||'none'};border-radius:${r.shape==='square'?'1px':'0'}"></div><span class="mk-lbl">${r.lbl}</span></div>`;
     if (r.ring)     return `<div class="mk-row"><div class="mk-ring-demo" style="--rc:${r.ring}"><div class="mk-ring-r mk-ring-r1"></div><div class="mk-ring-r mk-ring-r2"></div><div class="mk-ring-core"></div></div><span class="mk-lbl">${r.lbl}</span></div>`;
+    if (r.plane)    return `<div class="mk-row"><div class="mk-plane-ico" style="color:${r.plane};filter:drop-shadow(0 0 3px ${r.plane}88)">${typeof PLANE_SVG !== 'undefined' ? PLANE_SVG : '✈'}</div><span class="mk-lbl">${r.lbl}</span></div>`;
     if (r.cityType) {
       const svg = (typeof _CITY_ICONS !== 'undefined' && _CITY_ICONS[r.cityType]) || '';
       return `<div class="mk-row"><div class="mk-city-ico" style="color:${r.color};filter:drop-shadow(0 0 3px ${r.color}66)">${svg}</div><span class="mk-lbl">${r.lbl}</span></div>`;

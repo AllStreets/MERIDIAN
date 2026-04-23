@@ -13,18 +13,11 @@ const CATS = {
 };
 
 // ═══════════════════════════════════════════
-// API KEYS
+// API KEYS — defined in js/keys.js (gitignored)
 // ═══════════════════════════════════════════
-const NEWS_API_KEY   = '936a96241e5b442eb8d6e459748a81f2';
 const NEWS_CACHE_KEY = 'meridian_news_cache_v5';
 const NEWS_CACHE_TTL = 60 * 60 * 1000; // 60 minutes
 const NEWS_MAX_AGE_MS = 48 * 3600 * 1000;
-
-const WINDY_KEY     = 'Z793ALHwDaGZ2icKMnk62f2BCh4EGrCs';
-const OPENAI_KEY    = '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';
-const OPENSKY_ID    = 'allstreets-api-client';
-const OPENSKY_SEC   = 'sO4NRNNRbamjruwbY5Wcyjx5JtI0OzTl';
-const AISSTREAM_KEY = 'c925b9f4c0c103ca147699d9daa73975fa1c8088';
 
 // ═══════════════════════════════════════════
 // BROADCASTER CHANNELS
@@ -33,10 +26,8 @@ const BROADCASTERS = [
   { id:'aljazeera', name:'AL JAZEERA',   handle:'AlJazeeraEnglish', channelId:'UCNye-wNBqNL5ZzHSJj3l8Bg', color:'#E8A020', cover:'MENA', desc:'Middle East · Africa · Asia-Pacific',  regions:['middle east','gulf','arab','africa','qatar','iraq','iran','syria','yemen','sudan','libya'],   cats:['geo','mil'],        lat:25.2854, lng:51.5310,  city:'DOHA'     },
   { id:'france24',  name:'FRANCE 24',    handle:'France24_en',      channelId:'UCQfwfsi5VrQ8yKZ-UWmAEFg', color:'#0066CC', cover:'FRA',  desc:'France · Africa · Europe',             regions:['france','africa','paris','europe','sahel','mali','niger','chad','senegal','algeria'],          cats:['geo','mil'],        lat:48.8738, lng:2.2950,   city:'PARIS'    },
   { id:'dw',        name:'DW NEWS',      handle:'DWNews',           channelId:'UCknLrEdhRCp1aegoMqRaCZg', color:'#C00000', cover:'DEU',  desc:'Germany · Europe · Global analysis',   regions:['germany','europe','berlin','brussels','ukraine','russia','nato'],                              cats:['geo','fin','tec'],  lat:52.5200, lng:13.4050,  city:'BERLIN'   },
-  { id:'abc',       name:'ABC NEWS',     handle:'ABCNews',          channelId:'UCBi2mrWuNuyYy4gbM6fU18Q', color:'#1a3a6b', cover:'USA',  desc:'US · Americas · Breaking news',        regions:['us','united states','america','washington','new york','texas','california','canada','mexico'], cats:['geo','fin','mil'],  lat:40.7589, lng:-73.9851, city:'NEW YORK' },
-  { id:'bloomberg', name:'BLOOMBERG TV', handle:'Bloomberg',        channelId:'UCIALMKvObZNtJ6AmdCLP7Lg', color:'#2980b9', cover:'FIN',  desc:'Markets · Finance · Global business',  regions:['markets','finance','wall street','london','hong kong','tokyo','singapore','commodities'],      cats:['fin','tec','geo'],  lat:40.7527, lng:-73.9772, city:'NEW YORK' },
-  { id:'bbc',       name:'BBC NEWS',     handle:'BBCNews',          channelId:'UCnQnE0BsRNURMqxMb6sxGeA', color:'#BB1919', cover:'ENG',  desc:'UK · Global · Breaking news',          regions:['europe','uk','britain','england','london','global','commonwealth'],                            cats:['geo','mil','fin'],  lat:51.4986, lng:-0.1319,  city:'LONDON'   },
-  { id:'sky',       name:'SKY NEWS',     handle:'SkyNews',          channelId:null,                        color:'#0070C0', cover:'GBR',  desc:'UK · US · Live breaking news',         regions:['global','us','united states','america','washington','australia'],                              cats:['geo','fin','mil'],  lat:51.5220, lng:-0.0877,  city:'LONDON'   },
+  { id:'cbs',       name:'CBS NEWS',     handle:'CBSNews',           channelId:'UC8p1vwvWtl6T73JiExfWs1g', color:'#1C3F7A', cover:'USA',  desc:'US · 24/7 live news · Breaking coverage', regions:['us','united states','america','washington','new york','texas','california','white house','congress','nato'], cats:['geo','fin','mil'],  lat:40.7614, lng:-73.9776, city:'NEW YORK'      },
+  { id:'bloomberg', name:'BLOOMBERG TV', handle:'Bloomberg',        channelId:'UCIALMKvObZNtJ6AmdCLP7Lg', color:'#2980b9', cover:'FIN',  desc:'Markets · Finance · Global business',   regions:['markets','finance','wall street','london','hong kong','tokyo','singapore','commodities'],       cats:['fin','tec','geo'],  lat:40.7527, lng:-73.9772, city:'NEW YORK'     },
 ];
 const BROADCASTER_DEFAULT = 'aljazeera';
 
