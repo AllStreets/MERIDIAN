@@ -17,7 +17,7 @@ const CATS = {
 // ═══════════════════════════════════════════
 const NEWS_CACHE_KEY = 'meridian_news_cache_v5';
 const NEWS_CACHE_TTL = 20 * 60 * 1000; // 20 minutes
-const NEWS_MAX_AGE_MS = 48 * 3600 * 1000;
+const NEWS_MAX_AGE_MS = 7 * 24 * 3600 * 1000; // 7 days — wider window for dataset accumulation
 
 // ═══════════════════════════════════════════
 // BROADCASTER CHANNELS

@@ -152,21 +152,19 @@ async function fetchNews() {
     console.info(`[MERIDIAN] Fetch wave ${_fetchWave}: ${raw.length} raw → ${stories.length} passed (junk/age/coords filters)`);
     if (stories.length < 5) throw new Error('Too few locatable stories');
 
-    // Merge new stories into accumulative cache — total grows each refresh cycle
+    // Merge new stories into accumulative cache — stories persist until cap is hit
+    // No age eviction here: old stories are kept so the dataset grows over sessions
     const { map: existing } = _loadAccumCache();
-    // Evict stories older than 48h so stale headlines don't freeze the count
-    const _cutoff = Date.now() - NEWS_MAX_AGE_MS;
-    Object.keys(existing).forEach(k => { if ((existing[k]._pub || 0) < _cutoff) delete existing[k]; });
     stories.forEach(s => {
       const key = s.title.slice(0, 60);
       s._key = key;
       existing[key] = s; // overwrite same story with fresher version if re-fetched
     });
-    // Cap at 4000 entries to stay within localStorage ~5MB limit
+    // Cap at 8000 entries (~4MB) — oldest trimmed only when over limit
     const entries = Object.entries(existing);
-    if (entries.length > 4000) {
+    if (entries.length > 8000) {
       entries.sort((a, b) => (b[1]._pub || 0) - (a[1]._pub || 0));
-      entries.slice(4000).forEach(([k]) => delete existing[k]);
+      entries.slice(8000).forEach(([k]) => delete existing[k]);
     }
     _saveAccumCache(existing);
 
