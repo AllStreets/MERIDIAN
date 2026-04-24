@@ -149,17 +149,20 @@ async function fetchNews() {
       });
     }
 
+    console.info(`[MERIDIAN] Fetch wave ${_fetchWave}: ${raw.length} raw → ${stories.length} passed (junk/age/coords filters)`);
     if (stories.length < 5) throw new Error('Too few locatable stories');
 
     // Merge new stories into accumulative cache — total grows each refresh cycle
     const { map: existing } = _loadAccumCache();
+    // Evict stories older than 48h so stale headlines don't freeze the count
+    const _cutoff = Date.now() - NEWS_MAX_AGE_MS;
+    Object.keys(existing).forEach(k => { if ((existing[k]._pub || 0) < _cutoff) delete existing[k]; });
     stories.forEach(s => {
       const key = s.title.slice(0, 60);
       s._key = key;
       existing[key] = s; // overwrite same story with fresher version if re-fetched
     });
-    // Cap at 4000 entries to stay within localStorage ~5MB limit.
-    // Drop oldest stories only when over the cap — no arbitrary time cutoff.
+    // Cap at 4000 entries to stay within localStorage ~5MB limit
     const entries = Object.entries(existing);
     if (entries.length > 4000) {
       entries.sort((a, b) => (b[1]._pub || 0) - (a[1]._pub || 0));

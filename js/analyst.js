@@ -909,7 +909,7 @@ function buildMapKey() {
     { shape:'square',   color:'#FFD60A', lbl:'Yellow — Finance / economics story link' },
     { shape:'star',     color:'#30D158', lbl:'Green — Climate story link' },
     { s:'COUNTRY BORDER LAYER' },
-    { dash:'rgba(48,209,88,0.6)', lbl:'Green border — country at peace (legal boundary)' },
+    { dash:'rgba(100,180,255,0.6)', lbl:'Ice blue border — country at peace (legal boundary)' },
     { dash:'#FF2D55', lbl:'Red border — country in active armed conflict' },
     { dash:'rgba(255,45,85,0.9)', lbl:'Red dash — active front line / contact line' },
     { dash:'#FF9F0A', lbl:'Amber-black dash — disputed border / frozen DMZ' },
@@ -947,6 +947,11 @@ function buildMapKey() {
     { dash:'rgba(255,159,10,.5)', lbl:'Dead Reckoning: active country (amber glow on name)' },
     { dash:'rgba(48,209,88,.4)',  lbl:'Dead Reckoning: stable country (green glow on name)' },
     { dot:'#00D4FF', lbl:'Arc click → ARC TRACE — pins both stories to analyst board' },
+    { s:'GLOBE CONTROLS' },
+    { ctrl:'reset',  lbl:'Reset view — returns globe to default Eurasian perspective' },
+    { ctrl:'spin',   lbl:'Spin toggle — illuminated when auto-rotation is active' },
+    { ctrl:'arrows', lbl:'← → arrow keys — rotate globe along equator' },
+    { ctrl:'zoom',   lbl:'↑ ↓ arrow keys — zoom in / out' },
   ];
   const shapeClip = { diamond:'polygon(50% 0%,100% 50%,50% 100%,0% 50%)', triangle:'polygon(50% 0%,100% 100%,0% 100%)', square:'none', hex:'polygon(25% 0%,75% 0%,100% 50%,75% 100%,25% 100%,0% 50%)', star:'polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)' };
   document.getElementById('mk-list').innerHTML = rows.map(r => {
@@ -961,6 +966,15 @@ function buildMapKey() {
       return `<div class="mk-row"><div class="mk-city-ico" style="color:${r.color};filter:drop-shadow(0 0 3px ${r.color}66)">${svg}</div><span class="mk-lbl">${r.lbl}</span></div>`;
     }
     if (r.ctry)     return `<div class="mk-row"><div class="mk-ico-lbl" style="color:${r.color}">${r.ctry}</div><span class="mk-lbl">${r.lbl}</span></div>`;
+    if (r.ctrl) {
+      const icons = {
+        reset:  `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>`,
+        spin:   `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><ellipse cx="12" cy="12" rx="4" ry="10"/><line x1="2" y1="12" x2="22" y2="12"/></svg>`,
+        arrows: `<span style="font-size:9px;letter-spacing:1px">← →</span>`,
+        zoom:   `<span style="font-size:9px;letter-spacing:1px">↑ ↓</span>`,
+      };
+      return `<div class="mk-row"><div class="mk-ctrl-ico" style="color:rgba(100,180,255,.8)">${icons[r.ctrl]||''}</div><span class="mk-lbl">${r.lbl}</span></div>`;
+    }
     return '';
   }).join('');
 }
@@ -1185,14 +1199,14 @@ async function generatePlaybook() {
     pbStatus.textContent = 'PLAYBOOK GENERATED';
     const now = new Date().toLocaleString();
     pbContent.innerHTML = `
-      <div class="pb-classify">TOP SECRET // HCS-P // NOFORN</div>
+      <div class="pb-classify">TOP SECRET // HCS-P // REL TO FVEY</div>
       <div class="pb-heading">ADVERSARY PLAYBOOK</div>
       <div class="pb-date">PREPARED: ${now} · MERIDIAN INTELLIGENCE SYSTEM · NOT FOR DISTRIBUTION</div>
       <div>${brief.split('\n').filter(l => l.trim()).map(l => {
         if (/^[A-Z][A-Z\s\-\/]+:/.test(l.trim())) return `<div class="pb-sec-hdr">${l.trim()}</div>`;
         return `<p class="pb-para">${l}</p>`;
       }).join('')}</div>
-      <div class="pb-classify" style="margin-top:20px">TOP SECRET // HCS-P // NOFORN</div>`;
+      <div class="pb-classify" style="margin-top:20px">TOP SECRET // HCS-P // REL TO FVEY</div>`;
   } catch(e) {
     pbStatus.textContent = 'GENERATION FAILED — CHECK API KEY';
     pbContent.innerHTML = `<div class="pb-loading" style="color:rgba(48,209,88,.4)">ERROR: ${e.message}</div>`;
@@ -1204,7 +1218,7 @@ function exportPlaybook() {
   const bodyHtml = document.getElementById('pb-content')?.innerHTML || '';
   const html = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>ADVERSARY PLAYBOOK — ${now}</title>
 <style>*{box-sizing:border-box;margin:0;padding:0}body{background:#0a0303;color:#e8e8e8;font-family:'Courier New',monospace;font-size:11px;line-height:1.7}.pb-banner{background:#3d0a0a;border-top:1px solid #FF3B30;border-bottom:1px solid #FF3B30;color:#FF3B30;font-family:'Courier New',monospace;font-size:9px;font-weight:700;letter-spacing:.25em;text-align:center;padding:10px}.pb-body{max-width:860px;margin:0 auto;padding:40px 32px}.pb-heading{font-size:15px;font-weight:700;letter-spacing:.2em;color:#FF3B30;text-align:center;margin:28px 0 6px}.pb-date{font-size:8px;letter-spacing:.12em;color:rgba(255,255,255,.4);text-align:center;margin-bottom:28px}.pb-classify{background:#3d0a0a;border:1px solid rgba(255,59,48,.4);color:#FF3B30;font-family:'Courier New',monospace;font-size:9px;font-weight:700;letter-spacing:.25em;text-align:center;padding:10px}.pb-sec-hdr{font-size:8.5px;letter-spacing:.2em;color:rgba(255,59,48,.85);margin:16px 0 4px;padding-top:12px;border-top:1px solid rgba(255,59,48,.2)}.pb-para{font-size:10.5px;color:rgba(232,232,232,.9);line-height:1.75;margin:5px 0}</style>
-</head><body><div class="pb-banner">TOP SECRET // HCS-P // NOFORN</div><div class="pb-body">${bodyHtml}</div><div class="pb-banner">TOP SECRET // HCS-P // NOFORN</div></body></html>`;
+</head><body><div class="pb-banner">TOP SECRET // HCS-P // REL TO FVEY</div><div class="pb-body">${bodyHtml}</div><div class="pb-banner">TOP SECRET // HCS-P // REL TO FVEY</div></body></html>`;
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([html], {type:'text/html'}));
   a.download = `adversary-playbook-${Date.now()}.html`;

@@ -352,6 +352,7 @@ function _buildStaticCablePaths() {
   cablePaths = _STATIC_CABLE_ROUTES.map((pts, i) => ({
     pts,
     c1: _CABLE_PALETTE[i % _CABLE_PALETTE.length],
+    _cable: true,
   }));
 }
 
@@ -366,11 +367,11 @@ function refreshAllPaths() {
     .pathPointLat(p => p[1])
     .pathPointLng(p => p[0])
     .pathPointAlt(p => p.length > 2 ? p[2] : 0)
-    .pathColor(d => d.c1)
+    .pathColor(d => d._disrupted ? '#FF3B30' : d.c1)
     .pathStroke(d => d._dmz ? 1.4 : d._border ? 0.5 : 0.6)
-    .pathDashLength(d => d._dmz ? 0.3 : d._border ? 1.0 : 0.4)
-    .pathDashGap(d => d._dmz ? 0.08 : d._border ? 0 : 0.1)
-    .pathDashAnimateTime(d => (d._dmz || d._border) ? 0 : 5000);
+    .pathDashLength(d => d._dmz ? 0.3 : (d._border || d._cable) ? 1.0 : 0.4)
+    .pathDashGap(d => d._dmz ? 0.08 : 0)
+    .pathDashAnimateTime(0);
 }
 
 function refreshCablePaths() { refreshAllPaths(); }
@@ -392,7 +393,7 @@ async function fetchAndBuildCablePaths() {
       const idx = (feat.properties?.name||'').split('').reduce((h,c)=>h+c.charCodeAt(0),0) % 10;
       for (const line of allLines) {
         if (!line || line.length < 2) continue;
-        livePaths.push({ pts: line, c1: _CABLE_PALETTE[idx] });
+        livePaths.push({ pts: line, c1: _CABLE_PALETTE[idx], _cable: true });
       }
     }
     // Only replace static paths if live data has valid routes

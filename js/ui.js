@@ -235,8 +235,15 @@ function closeArticle() {
 
 function resetGlobe() {
   if (!G) return;
-  G.controls().autoRotate = true;
-  G.pointOfView({ lat: 20, lng: 10, altitude: 2.5 }, 1200);
+  G.pointOfView({ lat: 48, lng: 68, altitude: 1.8 }, 1200);
+}
+
+function toggleSpin() {
+  if (!G) return;
+  const on = !G.controls().autoRotate;
+  G.controls().autoRotate = on;
+  G.controls().autoRotateSpeed = on ? 0.32 : 0;
+  document.getElementById('spin-btn').classList.toggle('on', on);
 }
 
 document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeArticle(); closePicker(); } });

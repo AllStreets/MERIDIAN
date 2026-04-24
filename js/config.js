@@ -16,7 +16,7 @@ const CATS = {
 // API KEYS — defined in js/keys.js (gitignored)
 // ═══════════════════════════════════════════
 const NEWS_CACHE_KEY = 'meridian_news_cache_v5';
-const NEWS_CACHE_TTL = 60 * 60 * 1000; // 60 minutes
+const NEWS_CACHE_TTL = 20 * 60 * 1000; // 20 minutes
 const NEWS_MAX_AGE_MS = 48 * 3600 * 1000;
 
 // ═══════════════════════════════════════════
@@ -27,7 +27,11 @@ const BROADCASTERS = [
   { id:'france24',  name:'FRANCE 24',    handle:'France24_en',      channelId:'UCQfwfsi5VrQ8yKZ-UWmAEFg', color:'#0066CC', cover:'FRA',  desc:'France · Africa · Europe',             regions:['france','africa','paris','europe','sahel','mali','niger','chad','senegal','algeria'],          cats:['geo','mil'],        lat:48.8738, lng:2.2950,   city:'PARIS'    },
   { id:'dw',        name:'DW NEWS',      handle:'DWNews',           channelId:'UCknLrEdhRCp1aegoMqRaCZg', color:'#C00000', cover:'DEU',  desc:'Germany · Europe · Global analysis',   regions:['germany','europe','berlin','brussels','ukraine','russia','nato'],                              cats:['geo','fin','tec'],  lat:52.5200, lng:13.4050,  city:'BERLIN'   },
   { id:'cbs',       name:'CBS NEWS',     handle:'CBSNews',           channelId:'UC8p1vwvWtl6T73JiExfWs1g', color:'#1C3F7A', cover:'USA',  desc:'US · 24/7 live news · Breaking coverage', regions:['us','united states','america','washington','new york','texas','california','white house','congress','nato'], cats:['geo','fin','mil'],  lat:40.7614, lng:-73.9776, city:'NEW YORK'      },
-  { id:'bloomberg', name:'BLOOMBERG TV', handle:'Bloomberg',        channelId:'UCIALMKvObZNtJ6AmdCLP7Lg', color:'#2980b9', cover:'FIN',  desc:'Markets · Finance · Global business',   regions:['markets','finance','wall street','london','hong kong','tokyo','singapore','commodities'],       cats:['fin','tec','geo'],  lat:40.7527, lng:-73.9772, city:'NEW YORK'     },
+  { id:'bloomberg', name:'BLOOMBERG NEWS', handle:'BloombergQuicktake', channelId:'UChirEOpgFCupRAk5etXqPaA', color:'#2980b9', cover:'FIN',  desc:'Markets · Finance · Global business · 24/7', regions:['markets','finance','wall street','london','hong kong','tokyo','singapore','commodities'],       cats:['fin','tec','geo'],  lat:40.7527, lng:-73.9772, city:'NEW YORK'     },
+  { id:'abc_au',    name:'ABC AUSTRALIA', handle:'abcnewsaustralia',  channelId:'UCVgO39Bk5sMo66-6o6Spn6Q', color:'#00A86B', cover:'AUS',  desc:'Australia · Pacific · Asia',            regions:['australia','sydney','melbourne','pacific','new zealand','papua','indonesia','asia pacific'],      cats:['geo','fin'],        lat:-33.8688, lng:151.2093, city:'SYDNEY'    },
+  { id:'africanews',name:'AFRICANEWS',    handle:'africanews',        channelId:'UC1_E8NeF5QHY2dtdLRBCCLA', color:'#E05C00', cover:'AFR',  desc:'Pan-African · 24/7 English live news',  regions:['africa','nigeria','kenya','ethiopia','congo','ghana','cameroon','senegal','angola','mozambique'], cats:['geo','mil'],        lat:4.3612,  lng:18.5550,  city:'POINTE-NOIRE' },
+  { id:'cna',       name:'CNA',          handle:'channelnewsasia',   channelId:'UC83jt4dlz1Gjl58fzQrrKZg', color:'#00B4D8', cover:'ASIA', desc:'Asia · Pacific · Singapore · 24/7',      regions:['asia','singapore','china','japan','korea','india','southeast asia','asean','taiwan','hong kong','philippines','indonesia','thailand','malaysia'], cats:['geo','fin','tec'], lat:1.3521, lng:103.8198, city:'SINGAPORE' },
+  { id:'telesur',   name:'TELESUR',      handle:'teleSUREnglishtv',  channelId:'UCmuTmpLY35O3csvhyA6vrkg', color:'#C0392B', cover:'LATAM',desc:'Latin America · Caribbean · 24/7 English',regions:['latin america','brazil','argentina','colombia','venezuela','mexico','chile','peru','bolivia','cuba','caribbean'], cats:['geo','mil'],       lat:-12.0464, lng:-77.0428, city:'CARACAS'   },
 ];
 const BROADCASTER_DEFAULT = 'aljazeera';
 

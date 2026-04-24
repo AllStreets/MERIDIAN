@@ -133,7 +133,7 @@ const _WORLD_COUNTRIES = [
   {iso2:'BY',name:'Belarus',lat:53.5,lng:28.5,sanctions_subject:true},
   {iso2:'UA',name:'Ukraine',lat:49.0,lng:31.0,conflict_active:true,strategic_tier:2},
   {iso2:'MD',name:'Moldova',lat:47.5,lng:28.5},
-  {iso2:'RU',name:'Russia',lat:61.5,lng:105.0,nuclear_armed:true,un_p5:true,conflict_active:true,sanctions_subject:true,strategic_tier:1},
+  {iso2:'RU',name:'Russia',lat:55.0,lng:105.0,nuclear_armed:true,un_p5:true,conflict_active:true,sanctions_subject:true,strategic_tier:1},
   // Europe — Balkans
   {iso2:'GR',name:'Greece',lat:39.1,lng:21.8,nato_member:true},
   {iso2:'HR',name:'Croatia',lat:45.2,lng:15.5,nato_member:true},
@@ -156,7 +156,7 @@ const _WORLD_COUNTRIES = [
   {iso2:'IL',name:'Israel',lat:31.8,lng:35.2,nuclear_armed:true,conflict_active:true,strategic_tier:2},
   {iso2:'PS',name:'Palestine',lat:31.9,lng:35.2,conflict_active:true},
   {iso2:'IQ',name:'Iraq',lat:33.0,lng:44.0,conflict_active:true},
-  {iso2:'IR',name:'Iran',lat:32.5,lng:54.0,nuclear_armed:true,sanctions_subject:true,strategic_tier:2},
+  {iso2:'IR',name:'Iran',lat:32.5,lng:54.0,sanctions_subject:true,strategic_tier:2},
   {iso2:'SA',name:'Saudi Arabia',lat:24.7,lng:46.0,strategic_tier:2},
   {iso2:'YE',name:'Yemen',lat:15.5,lng:48.0,conflict_active:true},
   {iso2:'OM',name:'Oman',lat:22.0,lng:57.5},{iso2:'AE',name:'UAE',lat:24.0,lng:54.0,strategic_tier:2},
@@ -360,19 +360,26 @@ function initGlobe() {
     .atmosphereColor(getAtmos(tod))
     .atmosphereAltitude(0.17)
     .globeImageUrl(getTexture(tod))
-    .bumpImageUrl('//unpkg.com/three-globe/example/img/earth-topology.png')
     .htmlElementsData([]).htmlElement(makeMarker).htmlAltitude(0.02)
     .ringsData([]).ringColor(s => (s.color||'#fff')+'55').ringMaxRadius(4.5).ringPropagationSpeed(1.4).ringRepeatPeriod(900).ringAltitude(0.006)
     .arcsData([]).arcStartLat('slat').arcStartLng('slng').arcEndLat('elat').arcEndLng('elng').arcColor(d=>[d.c1,d.c2]).arcDashLength(0.4).arcDashGap(0.18).arcDashAnimateTime(2400).arcStroke(0.3).arcAltitudeAutoScale(0.3)
-    .pathsData([]).pathPoints(d=>d.pts).pathPointLat(p=>p[1]).pathPointLng(p=>p[0]).pathPointAlt(p=>p.length>2?p[2]:0).pathColor(d=>d.c1).pathStroke(1.0).pathDashLength(0.4).pathDashGap(0.12).pathDashAnimateTime(5000)
+    .pathsData([]).pathPoints(d=>d.pts).pathPointLat(p=>p[1]).pathPointLng(p=>p[0]).pathPointAlt(p=>p.length>2?p[2]:0).pathColor(d=>d.c1).pathStroke(1.0).pathDashLength(0.4).pathDashGap(0.12).pathDashAnimateTime(12000)
     .pointsData([]).pointLat('lat').pointLng('lng').pointAltitude(0.025).pointRadius(0.55).pointColor(()=>'rgba(0,0,0,0)')
     (document.getElementById('globe-wrap'));
+
+  // Default view — Eurasian supercontinent
+  G.pointOfView({ lat: 48, lng: 68, altitude: 1.8 });
 
   G.controls().autoRotate = true;
   G.controls().autoRotateSpeed = 0.32;
   G.controls().enableZoom = true;
   G.controls().minDistance = 110;
   G.controls().maxDistance = 900;
+  // Disable inertial damping — eliminates the "lag behind cursor" feel
+  G.controls().enableDamping = false;
+
+  // Cap pixel ratio at 1.5 — Retina (2×) causes 4× fill rate for no visible benefit
+  G.renderer().setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
 
   // onGlobeMouseMove not used (coords display removed), guard for Globe.gl version compat
   if (typeof G.onGlobeMouseMove === 'function') {
@@ -383,11 +390,35 @@ function initGlobe() {
   G.controls().addEventListener('change', () => {
     const alt   = G.pointOfView().altitude;
     const scale = Math.min(3.5, Math.max(0.55, 2.5 / alt));
-    // lblBoost: stays 1.0 at default zoom (scale≈1), grows to ~1.5 at max zoom
-    // effective label size = baseSize * scale * lblBoost — superlinear growth for readability
     const lblBoost = Math.min(1.5, Math.max(1.0, scale * 0.43));
     document.documentElement.style.setProperty('--gz-scale', scale.toFixed(3));
     document.documentElement.style.setProperty('--gz-lbl-boost', lblBoost.toFixed(3));
+  });
+
+  // Arrow key navigation — left/right spin equator, up/down zoom
+  window.addEventListener('keydown', e => {
+    if (!G) return;
+    // Don't steal keys when user is typing in an input or textarea
+    const tag = document.activeElement?.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+    const pov = G.pointOfView();
+    const step = 8; // degrees per keypress
+    const zoomStep = 0.12; // altitude fraction per keypress
+    if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      G.pointOfView({ lat: pov.lat, lng: pov.lng - step, altitude: pov.altitude }, 120);
+    } else if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      G.pointOfView({ lat: pov.lat, lng: pov.lng + step, altitude: pov.altitude }, 120);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      const newAlt = Math.max(0.12, pov.altitude - pov.altitude * zoomStep);
+      G.pointOfView({ lat: pov.lat, lng: pov.lng, altitude: newAlt }, 120);
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      const newAlt = Math.min(8.0, pov.altitude + pov.altitude * zoomStep);
+      G.pointOfView({ lat: pov.lat, lng: pov.lng, altitude: newAlt }, 120);
+    }
   });
 
   window.addEventListener('resize', () => G.width(innerWidth).height(innerHeight));
@@ -422,7 +453,14 @@ function checkDayNight(h) {
 // globe only needs the most recent 200 for a clean visual layer
 const GLOBE_STORY_LIMIT = 200;
 
+// Debounce guard — coalesce rapid calls (e.g. zoom + category change firing together)
+let _updateGlobeTimer = null;
 function updateAllGlobeElements() {
+  if (_updateGlobeTimer) return; // already queued
+  _updateGlobeTimer = setTimeout(() => { _updateGlobeTimer = null; _updateAllGlobeElementsNow(); }, 50);
+}
+
+function _updateAllGlobeElementsNow() {
   if (!G) return;
   const allStories = activeCat === 'all' ? NEWS : NEWS.filter(s => s.cat === activeCat);
   // Show the N most recent stories as markers; the full pool is still searchable
@@ -618,7 +656,15 @@ const SHARED_ENTITIES = [
   'AI','Chip','Semiconductor','Nuclear','Climate','Election',
 ];
 
+let _arcCacheKey = '';
+let _arcCacheResult = [];
+
 function computeMeaningfulArcs(stories) {
+  // Cache by story ID list — skip expensive O(n²) recompute if stories unchanged
+  const cacheKey = stories.map(s => s.id).join(',');
+  if (cacheKey === _arcCacheKey) return _arcCacheResult;
+  _arcCacheKey = cacheKey;
+
   const storyEnts = stories.map(s => ({
     s,
     ents: SHARED_ENTITIES.filter(e =>
@@ -643,7 +689,8 @@ function computeMeaningfulArcs(stories) {
       });
     }
   }
-  return arcs.sort((a,b) => b.strength - a.strength).slice(0, 18);
+  _arcCacheResult = arcs.sort((a,b) => b.strength - a.strength).slice(0, 18);
+  return _arcCacheResult;
 }
 
 function applyMeaningfulArcs(stories) {
@@ -821,8 +868,8 @@ function _rebuildBorderPaths() {
   borderPaths = [
     ..._meshToPaths(redCoast,    'rgba(255,45,85,0.60)'),
     ..._meshToPaths(redShared,   'rgba(255,45,85,0.55)'),
-    ..._meshToPaths(greenCoast,  'rgba(48,209,88,0.55)'),
-    ..._meshToPaths(greenShared, 'rgba(48,209,88,0.40)'),
+    ..._meshToPaths(greenCoast,  'rgba(100,180,255,0.85)'),
+    ..._meshToPaths(greenShared, 'rgba(100,180,255,0.70)'),
   ];
 
   if (typeof refreshAllPaths === 'function') refreshAllPaths();
