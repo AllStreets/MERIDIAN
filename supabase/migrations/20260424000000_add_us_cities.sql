@@ -15,4 +15,4 @@ INSERT INTO cities (name,country,iso2,continent,lat,lng,population,is_capital,is
 ('Atlanta','United States','US','North America',33.75,-84.39,498715,false,true,false,false,false,false,NULL,2,'financial','Fed Atlanta; busiest airport; CDC HQ; logistics hub'),
 ('Boston','United States','US','North America',42.36,-71.06,675647,false,true,false,false,true,false,NULL,2,'financial','Fed Boston; biotech corridor; MIT/Harvard R&D; defense tech'),
 ('Philadelphia','United States','US','North America',39.95,-75.16,1603797,false,false,false,false,true,false,NULL,3,'port','Philadelphia Naval Yard legacy; Delaware River port; pharma hub')
-ON CONFLICT (name, iso2) DO NOTHING;
+ON CONFLICT DO NOTHING;
